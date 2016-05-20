@@ -1,0 +1,206 @@
+html, body {
+  height: 100%
+}
+
+body {
+  margin: 0;
+  background: #efefef;
+  font-family: "Avenir", sans-serif;
+}
+
+#app {
+  position: relative;
+  height: 100%;
+}
+
+header {
+  background: #34474E;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+}
+
+header nav .nav-items {
+  margin: 0;
+  padding: 0;
+}
+
+header nav .logo {
+  background: #233239;
+  padding: 25px 30px;
+}
+
+.responsive-wrapper {
+  height: 50px;
+}
+.responsive-wrapper img {
+  height: 100%;
+  width: auto;
+}
+
+header nav .nav-items li {
+  list-style: none;
+}
+
+header nav .nav-items li a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #949CA0;
+  padding: 20px 25px;
+  text-decoration: none;
+  line-height: 24px;
+}
+
+header nav .nav-items li a .navicon {
+  height: 24px;
+  margin-right: 10px;
+  color: #6F8591;
+}
+
+header nav .nav-items li:hover a {
+  background: #11899A;
+  color: #fff;
+}
+
+header nav .nav-items li .v-link-active {
+  background: #00ACC4;
+  color: #fff;
+}
+
+header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-active .navicon {
+  color: #fff;
+}
+
+.main-app-display {
+  position: absolute;
+  left: 300px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
+}
+
+.page-header {
+  background: #fff;
+  padding: 0 25px;
+  font-size: 1.4em;
+  color: #566566;
+  height: 100px;
+  line-height: 100px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+}
+
+.padded-content {
+  padding: 15px
+}
+
+.padded-content.spacious {
+  padding: 35px
+}
+
+.app-section-header {
+  background: #fff;
+  font-size: 1.2em;
+  padding: 15px 25px;
+  border-bottom: solid 1px #efefef;
+}
+
+.app-section-content {
+  background: #fff;
+  padding: 0 20px;
+}
+
+.subheader-text {
+  font-family: "Avenir", sans-serif;
+  color: #676767;
+  padding-bottom: 0px;
+  font-size: 1.3em;
+  margin: 0;
+}
+
+.dialog-sub-header {
+  font-family: "Avenir", sans-serif;
+  color: #676767;
+  border-bottom: solid 1px #999;
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.app-header-strip {
+  background: rgb(0,188,212);
+}
+
+.app-header-strip h2.app-title-text {
+  color: #fff;
+  font-size: 1.3em;
+  margin: 0;
+  padding: 0 15px;
+}
+
+.app-title-text a {
+  text-decoration: none;
+  color: #A0F4FF;
+}
+
+.dialog-title {
+  color: #666;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.alert {
+  background: #FFE9AD;
+  border: solid 1px #E6CB8B;
+  border-radius: 2px;
+  padding: 12px 15px;
+  margin-top: 15px;
+}
+
+.data-loading {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 100px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* MDL Overrides */
+
+.mdl-list__item {
+  font-family: "Avenir", sans-serif;
+}
+
+.exam-card-wide.mdl-card {
+  width: 100%;
+}
+
+.exam-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+  background: #909089 center / cover;
+}
+
+.exam-card-wide > .mdl-card__menu {
+  color: #fff;
+}
+
+.create-exam-dialog {
+  width: 30%;
+}
+
+.create-exam-dialog .mdl-textfield {
+  width:100%
+}
+
+.exam-form-field {
+  margin-top: 20px;
+}
+/*.create-exam-dialog .mdl-textfield .mdl-textfield__input {
+  width: 100%;
+}*/

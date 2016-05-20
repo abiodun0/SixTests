@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="build/lib/material-design-lite/material.min.css" />
+    <link rel="stylesheet" href="build/lib/flxgrid/dist/css/flexgrid.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="build/css/app.css" />
+    <title>Six</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- App Navigation -->
+      <header>
+        <nav>
+          <div class="logo">
+            <div class="responsive-wrapper">
+              <img src="build/img/logo.png" />
+            </div>
+          </div>
+          <ul class="nav-items">
+            <li>
+              <a v-link="{ path: '/exams' }">
+                <div class="navicon">
+                  <i class="material-icons">dashboard</i>
+                </div>
+                <div class="navtext">
+                  Exams
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <div class="navicon">
+                  <i class="material-icons">settings</i>
+                </div>
+                <div class="navtext">
+                  Settings
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <div class="navicon">
+                  <i class="material-icons">exit_to_app</i>
+                </div>
+                <div class="navtext">
+                  Logout
+                </div>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <!-- Main App Display -->
+      <section class="main-app-display">
+        <router-view></router-view>
+      </section>
+    </div>
+  </body>
+  <script src="build/lib/material-design-lite/material.min.js"></script>
+  <script src="build/bundle.js"></script>
+</html>
