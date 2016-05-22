@@ -1,26 +1,43 @@
+import _ from 'lodash';
 import Vue from 'vue';
 import listTemplate from './list.html';
 import singleTemplate from './single.html';
 
+import { notify } from '../utils'
+
 import Exam from '../../models/exam';
+
+let idfyObj = function(key, obj) {
+  obj['__id'] = key;
+  return obj;
+}
+
+let objectToArray = function(obj) {
+  if(!obj)
+    return []
+
+  let updated = Object.keys(obj).map(function(id) {
+    return idfyObj(id, obj[id]);
+  })
+  return updated;
+}
 
 const ListExamComponent = Vue.extend({
   template: listTemplate,
   data() {
     return {
       newExam: {},
-      exams: []
+      exams: {}
     }
   },
   route: {
     activate() {
-      console.log("In here :: " + componentHandler);
-      componentHandler.upgradeAllRegistered();
+      componentHandler.upgradeDom()
     },
     data(transition) {
       Exam.all((exams) => {
         transition.next({
-          exams: exams
+          exams: objectToArray(exams)
         })
       })
     },
@@ -32,19 +49,30 @@ const ListExamComponent = Vue.extend({
         dialogPolyfill.registerDialog(dialog);
       }
       dialog.showModal();
-      dialog.querySelector('.close').addEventListener('click', function() {
+      dialog.querySelector('.close').addEventListener('click', () => {
         dialog.close();
-      });
+      })
     },
     createExam(event) {
-      console.log(this.newExam)
-      Exam.create()
+      let _this = this
+      Exam.create(this.newExam, (err, key) => {
+        if(err) {
+          console.log("Error occured while trying to create exam.")
+        } else {
+          var dialog = document.querySelector('.create-exam-dialog');
+          let _fb_form = idfyObj(key, this.newExam);
+          this.exams.push(_fb_form);
+          this.newExam = {};
+          dialog.close();
+          notify("Successfully added the test");
+        }
+      })
     }
   }
-});
+})
 
 const SingleExamComponent = Vue.extend({
   template: singleTemplate,
-});
+})
 
 export { ListExamComponent, SingleExamComponent };

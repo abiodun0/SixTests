@@ -4,7 +4,7 @@ const baseRef = database.ref('exams');
 
 var Exam = {
   all(cb) {
-    baseRef.on('value', (snapshot) => {
+    baseRef.once('value', (snapshot) => {
       cb(snapshot.val());
     })
   },
@@ -14,9 +14,10 @@ var Exam = {
     })
   },
   create(exam, cb) {
-    let key = baseRef.push().key();
-    let createdExam = baseRef.child(key).set(exam);
-    cb(createdExam);
+    let key = baseRef.push().key;
+    baseRef.child(key).set(exam, (err) => {
+      cb(err, key);
+    });
   },
   delete(id, cb) {
 

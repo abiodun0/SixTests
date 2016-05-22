@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="build/lib/material-design-lite/material.min.css" />
     <link rel="stylesheet" href="build/lib/flxgrid/dist/css/flexgrid.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Production -->
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
+    <!-- Development -->
+    <link rel="stylesheet" href="build/lib/material-design-icons/iconfont/material-icons.css" />
     <link rel="stylesheet" href="build/css/app.css" />
     <title>Six</title>
   </head>
@@ -31,7 +34,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a v-link="{ path: '/settings' }">
                 <div class="navicon">
                   <i class="material-icons">settings</i>
                 </div>
@@ -55,6 +58,10 @@
       </header>
       <!-- Main App Display -->
       <section class="main-app-display">
+        <div id="exam-notifications" class="mdl-js-snackbar mdl-snackbar">
+          <div class="mdl-snackbar__text"></div>
+          <button class="mdl-snackbar__action" type="button"></button>
+        </div>
         <router-view></router-view>
       </section>
     </div>

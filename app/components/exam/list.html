@@ -7,6 +7,11 @@
           <input class="mdl-textfield__input" type="text" id="test-name" v-model="newExam.name">
           <label class="mdl-textfield__label" for="test-name">Enter Test Name</label>
         </div>
+        <div class="mdl-textfield mdl-js-textfield">
+          <textarea class="mdl-textfield__input" type="text" rows="3" maxrows="6"
+           id="test-description" v-model="newExam.description"></textarea>
+          <label class="mdl-textfield__label" for="test-description">Test Description</label>
+        </div>
         <h4 class="dialog-sub-header">Exam Settings</h2>
         <div class="alert">Set this test as timed to set a duration</div>
         <div class="exam-form-field">
@@ -19,7 +24,7 @@
             <label class="mdl-textfield__label" for="test-duration">Enter exam duration in seconds</label>
           </div>
           <label for="test-privacy" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-            <input type="checkbox" id="test-privacy" class="mdl-checkbox__input" v-model="newExam.private">
+            <input type="checkbox" id="test-privacy" class="mdl-checkbox__input" v-model="newExam.privacy">
             <span class="mdl-checkbox__label">Private?</span>
           </label>
         </div>
