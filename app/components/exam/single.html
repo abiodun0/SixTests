@@ -11,8 +11,37 @@
   <div class="padded-content">
     <div class="mdl-grid">
       <div class="mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp">
-        <div class="padded-content spacious">
-          Some Text
+        <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+          <div class="mdl-tabs__tab-bar">
+            <a href="#about-panel" class="mdl-tabs__tab is-active">Questions</a>
+            <a href="#members-panel" class="mdl-tabs__tab">Exam Settings</a>
+          </div>
+          <div class="mdl-tabs__panel is-active" id="about-panel">
+            <div class="exam-toolbar">
+              <a class="toolbar-link">
+                <i class="material-icons">add</i>
+                Add question
+              </a>
+              <a class="toolbar-link">
+                <i class="material-icons">import_export</i>
+                Import from JSON
+              </a>
+            </div>
+            <div class="padded-content spacious">
+              Some content
+            </div>
+          </div>
+          <div class="mdl-tabs__panel" id="members-panel">
+            <div class="padded-content spacious">
+              <p>The Beatles' members were:</p>
+              <ul>
+                <li>John Lennon (1940-1980)</li>
+                <li>Paul McCartney (1942-)</li>
+                <li>George Harrison (1943-2001)</li>
+                <li>Ringo Starr (1940-)</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

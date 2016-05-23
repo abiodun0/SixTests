@@ -134,6 +134,7 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 }
 
 .app-header-strip h2.app-title-text {
+  font-family: "Avenir", sans-serif;
   color: #fff;
   font-size: 1.3em;
   margin: 0;
@@ -170,6 +171,45 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   right: 0;
 }
 
+.empty-message {
+  padding-top: 160px;
+}
+
+.empty-message h2 {
+  font-size: 1.5em;
+  font-family: "Avenir", sans-serif;
+  color: #676767;
+}
+
+.empty-message .empty-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.empty-message .empty-icon img {
+  width: 100%;
+  height: auto;
+}
+
+.exam-toolbar {
+  background: #f3f3f3;
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: solid 1px #dedede;
+}
+
+.exam-toolbar .toolbar-link {
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  color: slategrey;
+}
+
+.exam-toolbar .toolbar-link i {
+  margin-right: 5px;
+}
 /* MDL Overrides */
 
 .mdl-list__item {
@@ -200,6 +240,15 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 
 .exam-form-field {
   margin-top: 20px;
+}
+
+.mdl-tabs__tab-bar {
+  justify-content: flex-start;
+}
+
+.mdl-tabs__tab {
+  text-transform: none;
+  font-weight: 700;
 }
 /*.create-exam-dialog .mdl-textfield .mdl-textfield__input {
   width: 100%;

@@ -3,7 +3,7 @@ import Vue from 'vue';
 import listTemplate from './list.html';
 import singleTemplate from './single.html';
 
-import { notify } from '../utils'
+import { notify, loadUI } from '../utils'
 
 import Exam from '../../models/exam';
 
@@ -32,7 +32,7 @@ const ListExamComponent = Vue.extend({
   },
   route: {
     activate() {
-      componentHandler.upgradeDom()
+      loadUI()
     },
     data(transition) {
       Exam.all((exams) => {
@@ -73,6 +73,11 @@ const ListExamComponent = Vue.extend({
 
 const SingleExamComponent = Vue.extend({
   template: singleTemplate,
+  route: {
+    activate() {
+      loadUI()
+    }
+  }
 })
 
 export { ListExamComponent, SingleExamComponent };

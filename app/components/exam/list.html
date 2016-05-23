@@ -58,11 +58,19 @@
           {{ exam.description }}
         </div>
         <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color-text--cyan" v-link="{ path: '/exams/1' }">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color-text--cyan" v-link="{ path: '/exams/' + exam.__id }">
             Get Started
           </a>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="empty-message flex column-layout align-middle-center" v-if="!$loadingRouteData && !exams.length">
+    <div class="empty-icon">
+      <img src="build/img/folder.png" />
+    </div>
+    <div class="empty-text">
+      <h2>There are currently no items here</h2>
     </div>
   </div>
 </div>

@@ -13036,7 +13036,7 @@
 
 	  route: {
 	    activate: function activate() {
-	      componentHandler.upgradeDom();
+	      (0, _utils.loadUI)();
 	    },
 	    data: function data(transition) {
 	      _exam2.default.all(function (exams) {
@@ -13078,7 +13078,12 @@
 	});
 
 	var SingleExamComponent = _vue2.default.extend({
-	  template: _single2.default
+	  template: _single2.default,
+	  route: {
+	    activate: function activate() {
+	      (0, _utils.loadUI)();
+	    }
+	  }
 	});
 
 	exports.ListExamComponent = ListExamComponent;
@@ -13088,13 +13093,13 @@
 /* 7 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"padded-content\">\n  <dialog class=\"mdl-dialog create-exam-dialog\">\n    <div class=\"mdl-dialog__content\">\n      <form action=\"#\">\n        <h4 class=\"dialog-title\">Create a test</h4>\n        <div class=\"mdl-textfield mdl-js-textfield\">\n          <input class=\"mdl-textfield__input\" type=\"text\" id=\"test-name\" v-model=\"newExam.name\">\n          <label class=\"mdl-textfield__label\" for=\"test-name\">Enter Test Name</label>\n        </div>\n        <div class=\"mdl-textfield mdl-js-textfield\">\n          <textarea class=\"mdl-textfield__input\" type=\"text\" rows=\"3\" maxrows=\"6\"\n           id=\"test-description\" v-model=\"newExam.description\"></textarea>\n          <label class=\"mdl-textfield__label\" for=\"test-description\">Test Description</label>\n        </div>\n        <h4 class=\"dialog-sub-header\">Exam Settings</h2>\n        <div class=\"alert\">Set this test as timed to set a duration</div>\n        <div class=\"exam-form-field\">\n          <label for=\"test-type\" class=\"mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect\">\n            <input type=\"checkbox\" id=\"test-type\" class=\"mdl-checkbox__input\" v-model=\"newExam.timed\">\n            <span class=\"mdl-checkbox__label\">Timed?</span>\n          </label>\n          <div class=\"mdl-textfield mdl-js-textfield\">\n            <input class=\"mdl-textfield__input\" type=\"number\" id=\"test-duration\" v-model=\"newExam.duration\">\n            <label class=\"mdl-textfield__label\" for=\"test-duration\">Enter exam duration in seconds</label>\n          </div>\n          <label for=\"test-privacy\" class=\"mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect\">\n            <input type=\"checkbox\" id=\"test-privacy\" class=\"mdl-checkbox__input\" v-model=\"newExam.privacy\">\n            <span class=\"mdl-checkbox__label\">Private?</span>\n          </label>\n        </div>\n      </form>\n    </div>\n    <div class=\"mdl-dialog__actions\">\n      <button type=\"button\" class=\"mdl-button\" v-on:click=\"createExam\">OK</button>\n      <button type=\"button\" class=\"mdl-button close\">Cancel</button>\n    </div>\n  </dialog>\n  <div v-if=\"$loadingRouteData\" class=\"data-loading\">\n    <div class=\"mdl-spinner mdl-js-spinner is-active\"></div>\n  </div>\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--6-col\">\n      <h2 class=\"subheader-text\">\n        Listing out your exams\n      </h2>\n    </div>\n    <div class=\"mdl-cell mdl-cell--6-col flex align-middle-right\">\n      <a class=\"mdl-button mdl-button--raised mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color--cyan\" v-on:click=\"showCreateModal\">Create Exam</a>\n    </div>\n  </div>\n  <div class=\"mdl-grid\" v-if=\"!$loadingRouteData\">\n    <div class=\"mdl-cell mdl-cell--4-col\" v-for=\"exam in exams\">\n      <div class=\"exam-card-wide mdl-card mdl-shadow--2dp\">\n        <div class=\"mdl-card__title\">\n          <h2 class=\"mdl-card__title-text\">{{ exam.name }}</h2>\n        </div>\n        <div class=\"mdl-card__supporting-text\">\n          {{ exam.description }}\n        </div>\n        <div class=\"mdl-card__actions mdl-card--border\">\n          <a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color-text--cyan\" v-link=\"{ path: '/exams/1' }\">\n            Get Started\n          </a>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n"
+	module.exports = "<div class=\"padded-content\">\n  <dialog class=\"mdl-dialog create-exam-dialog\">\n    <div class=\"mdl-dialog__content\">\n      <form action=\"#\">\n        <h4 class=\"dialog-title\">Create a test</h4>\n        <div class=\"mdl-textfield mdl-js-textfield\">\n          <input class=\"mdl-textfield__input\" type=\"text\" id=\"test-name\" v-model=\"newExam.name\">\n          <label class=\"mdl-textfield__label\" for=\"test-name\">Enter Test Name</label>\n        </div>\n        <div class=\"mdl-textfield mdl-js-textfield\">\n          <textarea class=\"mdl-textfield__input\" type=\"text\" rows=\"3\" maxrows=\"6\"\n           id=\"test-description\" v-model=\"newExam.description\"></textarea>\n          <label class=\"mdl-textfield__label\" for=\"test-description\">Test Description</label>\n        </div>\n        <h4 class=\"dialog-sub-header\">Exam Settings</h2>\n        <div class=\"alert\">Set this test as timed to set a duration</div>\n        <div class=\"exam-form-field\">\n          <label for=\"test-type\" class=\"mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect\">\n            <input type=\"checkbox\" id=\"test-type\" class=\"mdl-checkbox__input\" v-model=\"newExam.timed\">\n            <span class=\"mdl-checkbox__label\">Timed?</span>\n          </label>\n          <div class=\"mdl-textfield mdl-js-textfield\">\n            <input class=\"mdl-textfield__input\" type=\"number\" id=\"test-duration\" v-model=\"newExam.duration\">\n            <label class=\"mdl-textfield__label\" for=\"test-duration\">Enter exam duration in seconds</label>\n          </div>\n          <label for=\"test-privacy\" class=\"mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect\">\n            <input type=\"checkbox\" id=\"test-privacy\" class=\"mdl-checkbox__input\" v-model=\"newExam.privacy\">\n            <span class=\"mdl-checkbox__label\">Private?</span>\n          </label>\n        </div>\n      </form>\n    </div>\n    <div class=\"mdl-dialog__actions\">\n      <button type=\"button\" class=\"mdl-button\" v-on:click=\"createExam\">OK</button>\n      <button type=\"button\" class=\"mdl-button close\">Cancel</button>\n    </div>\n  </dialog>\n  <div v-if=\"$loadingRouteData\" class=\"data-loading\">\n    <div class=\"mdl-spinner mdl-js-spinner is-active\"></div>\n  </div>\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--6-col\">\n      <h2 class=\"subheader-text\">\n        Listing out your exams\n      </h2>\n    </div>\n    <div class=\"mdl-cell mdl-cell--6-col flex align-middle-right\">\n      <a class=\"mdl-button mdl-button--raised mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color--cyan\" v-on:click=\"showCreateModal\">Create Exam</a>\n    </div>\n  </div>\n  <div class=\"mdl-grid\" v-if=\"!$loadingRouteData\">\n    <div class=\"mdl-cell mdl-cell--4-col\" v-for=\"exam in exams\">\n      <div class=\"exam-card-wide mdl-card mdl-shadow--2dp\">\n        <div class=\"mdl-card__title\">\n          <h2 class=\"mdl-card__title-text\">{{ exam.name }}</h2>\n        </div>\n        <div class=\"mdl-card__supporting-text\">\n          {{ exam.description }}\n        </div>\n        <div class=\"mdl-card__actions mdl-card--border\">\n          <a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color-text--cyan\" v-link=\"{ path: '/exams/' + exam.__id }\">\n            Get Started\n          </a>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class=\"empty-message flex column-layout align-middle-center\" v-if=\"!$loadingRouteData && !exams.length\">\n    <div class=\"empty-icon\">\n      <img src=\"build/img/folder.png\" />\n    </div>\n    <div class=\"empty-text\">\n      <h2>There are currently no items here</h2>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
 /* 8 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <div class=\"app-header-strip\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col\">\n        <h2 class=\"app-title-text\">\n          <a v-link=\"{ path: '/exams' }\">Exams</a> / Exam 1\n        </h2>\n      </div>\n    </div>\n  </div>\n  <div class=\"padded-content\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n        <div class=\"padded-content spacious\">\n          Some Text\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n"
+	module.exports = "<div>\n  <div class=\"app-header-strip\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col\">\n        <h2 class=\"app-title-text\">\n          <a v-link=\"{ path: '/exams' }\">Exams</a> / Exam 1\n        </h2>\n      </div>\n    </div>\n  </div>\n  <div class=\"padded-content\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n        <div class=\"mdl-tabs mdl-js-tabs mdl-js-ripple-effect\">\n          <div class=\"mdl-tabs__tab-bar\">\n            <a href=\"#about-panel\" class=\"mdl-tabs__tab is-active\">Questions</a>\n            <a href=\"#members-panel\" class=\"mdl-tabs__tab\">Exam Settings</a>\n          </div>\n          <div class=\"mdl-tabs__panel is-active\" id=\"about-panel\">\n            <div class=\"exam-toolbar\">\n              <a class=\"toolbar-link\">\n                <i class=\"material-icons\">add</i>\n                Add question\n              </a>\n              <a class=\"toolbar-link\">\n                <i class=\"material-icons\">import_export</i>\n                Import from JSON\n              </a>\n            </div>\n            <div class=\"padded-content spacious\">\n              Some content\n            </div>\n          </div>\n          <div class=\"mdl-tabs__panel\" id=\"members-panel\">\n            <div class=\"padded-content spacious\">\n              <p>The Beatles' members were:</p>\n              <ul>\n                <li>John Lennon (1940-1980)</li>\n                <li>Paul McCartney (1942-)</li>\n                <li>George Harrison (1943-2001)</li>\n                <li>Ringo Starr (1940-)</li>\n              </ul>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
 /* 9 */
@@ -30109,7 +30114,14 @@
 	  });
 	};
 
+	var loadUI = function loadUI() {
+	  setTimeout(function () {
+	    componentHandler.upgradeDom();
+	  });
+	};
+
 	exports.notify = notify;
+	exports.loadUI = loadUI;
 
 /***/ }
 /******/ ]);

@@ -5,4 +5,10 @@ let notify = (message) => {
   });
 };
 
-export { notify };
+let loadUI = () => {
+  setTimeout(function() {
+    componentHandler.upgradeDom();
+  });
+}
+
+export { notify, loadUI };
