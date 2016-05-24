@@ -18,7 +18,7 @@ router.map({
         name: 'exams',
         component: ListExamComponent
       },
-      '/exams/:exam-id': {
+      '/exams/:exam_id': {
         name: 'singleexam',
         component: SingleExamComponent
       },

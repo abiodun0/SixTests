@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import marked from 'marked';
 import Vue from 'vue';
 import listTemplate from './list.html';
 import singleTemplate from './single.html';
@@ -6,6 +7,7 @@ import singleTemplate from './single.html';
 import { notify, loadUI } from '../utils'
 
 import Exam from '../../models/exam';
+import Question from '../../models/question';
 
 let idfyObj = function(key, obj) {
   obj['__id'] = key;
@@ -73,10 +75,82 @@ const ListExamComponent = Vue.extend({
 
 const SingleExamComponent = Vue.extend({
   template: singleTemplate,
+  data() {
+    return {
+      questions: [],
+      question: {
+        text: '',
+        is_correct: 0,
+        options: []
+      },
+      addingQuestion: false,
+      numberOfOptions: 2
+    }
+  },
   route: {
     activate() {
       loadUI()
+    },
+    data(transition) {
+      let examId = this.$route.params.exam_id;
+      this.examId = examId;
+      Exam.get(examId, (exam) => {
+        Question.all(examId, (questions) => {
+          transition.next({
+            exam: exam,
+            questions: objectToArray(questions)
+          })
+        })
+      })
+    },
+  },
+  methods: {
+    displayForm() {
+      this.addingQuestion = true;
+    },
+    resetQuestion() {
+      this.question = {
+        text: '',
+        is_correct: 0,
+        options: []
+      };
+    },
+    addOption() {
+      if(this.numberOfOptions < 5) {
+        this.numberOfOptions += 1
+        loadUI()
+      }
+    },
+    closeForm() {
+      this.addingQuestion = false;
+      this.resetQuestion();
+    },
+    createQuestion(event) {
+      let _this = this
+      Question.create(this.examId, this.question, (err, key) => {
+        if(err) {
+          console.log("Error occured while trying to create question.")
+        } else {
+          let _fb_q = idfyObj(key, this.question);
+          this.questions.push(_fb_q);
+          this.closeForm();
+          notify("Successfully added the question");
+        }
+      })
+    },
+    deleteQuestion(id, idx, event) {
+      Question.delete(this.examId, id, (err) => {
+        if(err) {
+          console.log("Error occured while trying to delete question.")
+        } else {
+          this.questions.splice(idx, 1);
+          notify("Successfully deleted the question");
+        }
+      })
     }
+  },
+  filters: {
+    marked: marked
   }
 })
 

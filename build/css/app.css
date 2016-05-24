@@ -5,7 +5,11 @@ html, body {
 body {
   margin: 0;
   background: #efefef;
-  font-family: "Avenir", sans-serif;
+  font-family: "Nunito", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p, .mdl-button {
+  font-family: "Nunito", sans-serif;
 }
 
 #app {
@@ -114,7 +118,7 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 }
 
 .subheader-text {
-  font-family: "Avenir", sans-serif;
+  font-family: "Nunito", sans-serif;
   color: #676767;
   padding-bottom: 0px;
   font-size: 1.3em;
@@ -122,7 +126,7 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 }
 
 .dialog-sub-header {
-  font-family: "Avenir", sans-serif;
+  font-family: "Nunito", sans-serif;
   color: #676767;
   border-bottom: solid 1px #999;
   font-size: 1.2em;
@@ -134,7 +138,6 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 }
 
 .app-header-strip h2.app-title-text {
-  font-family: "Avenir", sans-serif;
   color: #fff;
   font-size: 1.3em;
   margin: 0;
@@ -175,9 +178,12 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   padding-top: 160px;
 }
 
+.empty-message.regular {
+  padding-top: 70px;
+}
+
 .empty-message h2 {
   font-size: 1.5em;
-  font-family: "Avenir", sans-serif;
   color: #676767;
 }
 
@@ -205,15 +211,134 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   align-items: center;
   padding: 0 20px;
   color: slategrey;
+  cursor: pointer;
+  transition: color .2s;
+}
+
+.exam-toolbar .toolbar-link:hover {
+  color: #000;
+  transition: color .2s;
 }
 
 .exam-toolbar .toolbar-link i {
   margin-right: 5px;
 }
+
+.exam-question {
+  border-bottom: solid 1px #dedede;
+  padding: 25px 35px;
+}
+
+.exam-question h4 {
+  font-size: 1.3em;
+  font-family: "Nunito", sans-serif;
+  margin-top: 15px;
+}
+
+.exam-question .mdl-textfield {
+  width: auto;
+  display: block;
+}
+
+.exam-option .mdl-radio {
+  height: 24px;
+  margin-right: 10px;
+}
+
+.exam-options {
+  margin-bottom: 35px;
+}
+
+.exam-preview {
+  padding-left: 30px;
+  border-left: solid 1px #efefef;
+}
+
+.question-text h1,
+.question-text h2,
+.question-text h3,
+.question-text h4,
+.question-text h5,
+.question-text h6,
+.question-text p {
+  font-family: "Crimson Text", serif;
+}
+
+.question-text p {
+  font-size: 1.3em;
+}
+
+.question-text code {
+  display: block;
+  border: solid 1px #dedede;
+  background: #f3f3f3;
+  padding: 12px 15px;
+  font-family: Consolas, monospace;
+  margin: 20px 0;
+}
+
+.exam-preview ol li {
+  font-family: "Crimson Text", serif;
+  font-size: 1.3em;
+}
+
+.form-subheader-text {
+  font-size: 1.1em;
+  font-weight: 700;
+  padding-bottom: 2px;
+  margin-top: 14px;
+  color: #a9a9a9;
+}
+
+.question-items {
+  width: 100%;
+}
+
+.question-items tbody tr:hover {
+  background: #F3F8F9;
+}
+
+.question-items th {
+  border-bottom: solid 1px #efefef;
+  text-align: left;
+}
+
+.question-items th, .question-items td {
+  padding: 10px;
+}
+
+.question-items td {
+  font-weight: 300;
+}
+
+.question-items td.actions {
+  text-align: right;
+}
+
+.question-items td.actions a {
+  opacity: 0;
+  margin-right: 15px;
+  color: #767676;
+  transition: opacity .4s;
+  cursor: pointer;
+}
+
+.question-items td.actions a:hover {
+  color: #00BCD4;
+}
+
+.question-items tbody tr:hover td.actions a {
+  opacity: 1;
+  transition: opacity .4s;
+}
+
+.spacer {
+  margin-top: 2.0em;
+}
 /* MDL Overrides */
 
 .mdl-list__item {
-  font-family: "Avenir", sans-serif;
+  font-family: "Nunito", sans-serif;
 }
 
 .exam-card-wide.mdl-card {
@@ -249,6 +374,11 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 .mdl-tabs__tab {
   text-transform: none;
   font-weight: 700;
+}
+
+.mdl-textfield__input {
+  font-family: "Nunito", sans-serif;
+  font-weight: 300;
 }
 /*.create-exam-dialog .mdl-textfield .mdl-textfield__input {
   width: 100%;

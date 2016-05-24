@@ -9,18 +9,18 @@ var Exam = {
     })
   },
   get(id, cb) {
-    baseRef.child(id).on('value', (snapshot) => {
+    baseRef.child(id).once('value', (snapshot) => {
       cb(snapshot.val())
     })
   },
   create(exam, cb) {
-    let key = baseRef.push().key;
+    let key = '6e__' + baseRef.push().key;
     baseRef.child(key).set(exam, (err) => {
       cb(err, key);
     });
   },
   delete(id, cb) {
-
+    baseRef.child(id).remove(cb)
   }
 };
 
