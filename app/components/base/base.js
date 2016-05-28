@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import template from './base.html';
 
-const BaseComponent = Vue.extend({
+const BaseAppComponent = Vue.extend({
   template,
 });
 
-export default BaseComponent;
+export default BaseAppComponent;

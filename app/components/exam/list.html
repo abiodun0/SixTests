@@ -1,51 +1,30 @@
 <div class="padded-content">
-  <dialog class="mdl-dialog create-exam-dialog">
-    <div class="mdl-dialog__content">
-      <form action="#">
-        <h4 class="dialog-title">Create a test</h4>
-        <div class="mdl-textfield mdl-js-textfield">
-          <input class="mdl-textfield__input" type="text" id="test-name" v-model="newExam.name">
-          <label class="mdl-textfield__label" for="test-name">Enter Test Name</label>
-        </div>
-        <div class="mdl-textfield mdl-js-textfield">
-          <textarea class="mdl-textfield__input" type="text" rows="3" maxrows="6"
-           id="test-description" v-model="newExam.description"></textarea>
-          <label class="mdl-textfield__label" for="test-description">Test Description</label>
-        </div>
-        <h4 class="dialog-sub-header">Exam Settings</h2>
-        <div class="alert">Set this test as timed to set a duration</div>
-        <div class="exam-form-field">
-          <label for="test-type" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-            <input type="checkbox" id="test-type" class="mdl-checkbox__input" v-model="newExam.timed">
-            <span class="mdl-checkbox__label">Timed?</span>
-          </label>
-          <div class="mdl-textfield mdl-js-textfield">
-            <input class="mdl-textfield__input" type="number" id="test-duration" v-model="newExam.duration">
-            <label class="mdl-textfield__label" for="test-duration">Enter exam duration in seconds</label>
-          </div>
-          <label for="test-privacy" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-            <input type="checkbox" id="test-privacy" class="mdl-checkbox__input" v-model="newExam.privacy">
-            <span class="mdl-checkbox__label">Private?</span>
-          </label>
-        </div>
-      </form>
-    </div>
-    <div class="mdl-dialog__actions">
-      <button type="button" class="mdl-button" v-on:click="createExam">OK</button>
-      <button type="button" class="mdl-button close">Cancel</button>
-    </div>
-  </dialog>
+  <mdl-dialog v-ref:create-exam-dialog title="Create a test">
+    <form action="#">
+      <mdl-textfield label="Enter Test Name" :value.sync="newExam.name"></mdl-textfield>
+      <mdl-textfield label="Test Description" :value.sync="newExam.description" textarea rows="3"></mdl-textfield>
+      <h4 class="dialog-sub-header">Exam Settings</h2>
+      <div class="alert">Set this test as timed to set a duration</div>
+      <div class="exam-form-field">
+        <mdl-checkbox :checked.sync="newExam.timed" class="mdl-js-ripple-effect">Timed</mdl-checkbox>
+        <mdl-textfield label="Enter exam duration in seconds" :value.sync="newExam.duration"></mdl-textfield>
+        <mdl-checkbox :checked.sync="newExam.privacy" class="mdl-js-ripple-effect">Private</mdl-checkbox>
+      </div>
+    </form>
+    <template slot="actions">
+      <mdl-button v-on:click="createExam">OK</mdl-button>
+      <mdl-button @click="$refs.createExamDialog.close">Cancel</mdl-button>
+    </template>
+  </mdl-dialog>
   <div v-if="$loadingRouteData" class="data-loading">
-    <div class="mdl-spinner mdl-js-spinner is-active"></div>
+    <mdl-spinner></mdl-spinner>
   </div>
   <div class="mdl-grid">
     <div class="mdl-cell mdl-cell--6-col">
-      <h2 class="subheader-text">
-        Listing out your exams
-      </h2>
+      <h2 class="subheader-text">Listing out your exams</h2>
     </div>
     <div class="mdl-cell mdl-cell--6-col flex align-middle-right">
-      <a class="mdl-button mdl-button--raised mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color--cyan" v-on:click="showCreateModal">Create Exam</a>
+      <mdl-button raised colored @click="showCreateModal" class="mdl-js-ripple-effect mdl-color--cyan">Create Exam</mdl-button>
     </div>
   </div>
   <div class="mdl-grid" v-if="!$loadingRouteData">
@@ -58,16 +37,14 @@
           {{ exam.description }}
         </div>
         <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color-text--cyan" v-link="{ path: '/exams/' + exam.__id }">
-            Get Started
-          </a>
+          <mdl-anchor-button colored class="mdl-js-ripple-effect mdl-color-text--cyan" v-link="{ path: '/app/exams/' + exam.__id }">Get Started</mdl-anchor-button>
         </div>
       </div>
     </div>
   </div>
   <div class="empty-message flex column-layout align-middle-center" v-if="!$loadingRouteData && !exams.length">
     <div class="empty-icon">
-      <img src="build/img/folder.png" />
+      <img src="/build/img/folder.png" />
     </div>
     <div class="empty-text">
       <h2>There are currently no items here</h2>

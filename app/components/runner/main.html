@@ -1,0 +1,34 @@
+<div>
+  <header class="horizontal">
+    <div class="shunted-container">
+      <nav>
+        <div class="logo">
+          <div class="responsive-wrapper">
+            <img src="/build/img/logo.png" />
+          </div>
+        </div>
+      <nav>
+    </div>
+  </header>
+  <main>
+    <div class="shunted-container">
+      <div class="test-container mdl-color--white mdl-shadow--2dp" v-if="!$loadingRouteData">
+        <h1>{{ exam.name }}</h1>
+        <div class="question-container column-layout flex align-top-left" v-for="question in questions">
+          <div class="count">Question #{{$index}}</div>
+          <div class="question-text fill" v-html="question.text || '' | marked"></div>
+          <div class="question-options">
+            <div class="question-option flex align-middle-left" v-for="option in question.options">
+              <label for="question-correct-{{$index}}" class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                <input type="radio" id="question-correct-{{$index}}" name="question-correct" class="mdl-radio__button" v-model="question.is_correct" value="{{$index}}">
+              </label>
+              <div>
+                {{option.text}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

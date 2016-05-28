@@ -1,26 +1,51 @@
 import Vue from 'vue';
+import VueMdl from 'vue-mdl'
 import VueRouter from 'vue-router';
-import BaseComponent from './components/base/base'
-import { ListExamComponent, SingleExamComponent } from './components/exam/exam';
+import HomeComponent from './components/home/home';
+import BaseAppComponent from './components/base/base';
+import RunExamComponent from './components/runner/runner';
+import {
+  ListExamComponent,
+  SingleExamComponent,
+  BaseExamComponent
+} from './components/exam/exam';
 import SettingsComponent from './components/settings/settings'
 
 Vue.use(VueRouter);
+Vue.use(VueMdl);
 
 var App = Vue.extend({});
 
-var router = new VueRouter();
+var router = new VueRouter({
+  hashbang: false,
+  history: true
+});
 
 router.map({
   '/': {
-    component: BaseComponent,
+    name: 'home',
+    component: HomeComponent
+  },
+  '/runner/:exam_id': {
+    name: 'runner',
+    component: RunExamComponent
+  },
+  '/app': {
+    component: BaseAppComponent,
     subRoutes: {
       '/exams': {
         name: 'exams',
-        component: ListExamComponent
-      },
-      '/exams/:exam_id': {
-        name: 'singleexam',
-        component: SingleExamComponent
+        component: BaseExamComponent,
+        subRoutes: {
+          '/': {
+            name: 'allexams',
+            component: ListExamComponent
+          },
+          '/:exam_id': {
+            name: 'singleexam',
+            component: SingleExamComponent
+          }
+        }
       },
       '/settings': {
         name: 'settings',

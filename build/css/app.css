@@ -44,6 +44,20 @@ header nav .logo {
   width: auto;
 }
 
+header.horizontal {
+  position: fixed;
+  background: #233239;
+  right: 0;
+  bottom: auto;
+  height: auto;
+  width: auto;
+  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.1);
+}
+
+header.horizontal nav .logo {
+  background: transparent;
+}
+
 header nav .nav-items li {
   list-style: none;
 }
@@ -90,11 +104,24 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 .page-header {
   background: #fff;
   padding: 0 25px;
-  font-size: 1.4em;
   color: #566566;
   height: 100px;
   line-height: 100px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+}
+
+.page-header h1 {
+  font-size: 1.4em;
+  margin: 0;
+}
+
+.header-controls {
+  position: relative;
+}
+
+.header-controls .user-information {
+  font-size: 1.0em;
+  margin-right: 15px;
 }
 
 .padded-content {
@@ -103,6 +130,10 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 
 .padded-content.spacious {
   padding: 35px
+}
+
+.padded-content.compact {
+  padding: 15px 35px;
 }
 
 .app-section-header {
@@ -149,10 +180,12 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   color: #A0F4FF;
 }
 
-.dialog-title {
+.mdl-dialog__title {
+  font-size: 1.6em;
   color: #666;
   margin: 0;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  padding-top: 25px;
 }
 
 .alert {
@@ -226,7 +259,7 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 
 .exam-question {
   border-bottom: solid 1px #dedede;
-  padding: 25px 35px;
+  padding: 25px 15px;
 }
 
 .exam-question h4 {
@@ -250,8 +283,8 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 }
 
 .exam-preview {
-  padding-left: 30px;
-  border-left: solid 1px #efefef;
+  border: solid 1px #efefef;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,0.1)
 }
 
 .question-text h1,
@@ -270,11 +303,12 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 
 .question-text code {
   display: block;
-  border: solid 1px #dedede;
-  background: #f3f3f3;
   padding: 12px 15px;
   font-family: Consolas, monospace;
   margin: 20px 0;
+  border: solid 1px #dedede;
+  border-left: solid 4px #95E641;
+  color: #565656;
 }
 
 .exam-preview ol li {
@@ -335,6 +369,48 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 .spacer {
   margin-top: 2.0em;
 }
+
+.shunted-container {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.test-container {
+  margin-top: 150px;
+  padding: 70px 100px;
+}
+
+.test-container h1 {
+  font-size: 2.8em;
+  font-weight: 300;
+  margin-bottom: 40px;
+}
+
+.question-container {
+  margin-bottom: 25px;
+}
+
+.test-container .question-container .count {
+  font-family: "Crimson Text", serif;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.test-container .question-container .question-text {
+  font-size: 1.1em;
+}
+
+.test-container .question-options .question-option {
+  font-family: "Crimson Text", serif;
+  font-size: 1.3em;
+  margin-bottom: 7px;
+}
+
+.test-container .question-options .question-option .mdl-radio {
+  height: 24px;
+  margin-right: 5px;
+}
+
 /* MDL Overrides */
 
 .mdl-list__item {
@@ -355,11 +431,11 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   color: #fff;
 }
 
-.create-exam-dialog {
-  width: 30%;
+.mdl-dialog {
+  width: 30% !important;
 }
 
-.create-exam-dialog .mdl-textfield {
+.mdl-dialog .mdl-textfield {
   width:100%
 }
 
@@ -379,6 +455,21 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 .mdl-textfield__input {
   font-family: "Nunito", sans-serif;
   font-weight: 300;
+}
+
+.mdl-switch__label {
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.toggle-switch .ms-label {
+  font-weight: 300;
+  margin-right: 10px;
+  color: #666;
+}
+
+.toggle-switch .mdl-switch {
+  width: auto;
 }
 /*.create-exam-dialog .mdl-textfield .mdl-textfield__input {
   width: 100%;

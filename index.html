@@ -3,71 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="build/lib/material-design-lite/material.min.css" />
-    <link rel="stylesheet" href="build/lib/flxgrid/dist/css/flexgrid.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/material-design-lite/material.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/flxgrid/dist/css/flexgrid.min.css') }}" />
     <!-- Production -->
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
     <!-- Development -->
     <link href='https://fonts.googleapis.com/css?family=Crimson+Text:400,400italic,600,600italic,700,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Nunito:400,700,300' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="build/lib/material-design-icons/iconfont/material-icons.css" />
-    <link rel="stylesheet" href="build/css/app.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/material-design-icons/iconfont/material-icons.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     <title>Six</title>
   </head>
   <body>
     <div id="app">
-      <!-- App Navigation -->
-      <header>
-        <nav>
-          <div class="logo">
-            <div class="responsive-wrapper">
-              <img src="build/img/logo.png" />
-            </div>
-          </div>
-          <ul class="nav-items">
-            <li>
-              <a v-link="{ path: '/exams' }">
-                <div class="navicon">
-                  <i class="material-icons">dashboard</i>
-                </div>
-                <div class="navtext">
-                  Exams
-                </div>
-              </a>
-            </li>
-            <li>
-              <a v-link="{ path: '/settings' }">
-                <div class="navicon">
-                  <i class="material-icons">settings</i>
-                </div>
-                <div class="navtext">
-                  Settings
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <div class="navicon">
-                  <i class="material-icons">exit_to_app</i>
-                </div>
-                <div class="navtext">
-                  Logout
-                </div>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </header>
-      <!-- Main App Display -->
-      <section class="main-app-display">
-        <div id="exam-notifications" class="mdl-js-snackbar mdl-snackbar">
-          <div class="mdl-snackbar__text"></div>
-          <button class="mdl-snackbar__action" type="button"></button>
-        </div>
-        <router-view></router-view>
-      </section>
+      <router-view></router-view>
     </div>
   </body>
-  <script src="build/lib/material-design-lite/material.min.js"></script>
-  <script src="build/bundle.js"></script>
+  <script src="{{ url_for('static', filename='lib/material-design-lite/material.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 </html>

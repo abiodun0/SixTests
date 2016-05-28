@@ -6,9 +6,24 @@ let notify = (message) => {
 };
 
 let loadUI = () => {
-  setTimeout(function() {
+  setTimeout(() => {
     componentHandler.upgradeDom();
   });
 }
 
-export { notify, loadUI };
+let idfyObj = (key, obj) => {
+  obj['__id'] = key;
+  return obj;
+}
+
+let objectToArray = (obj) => {
+  if(!obj)
+    return []
+
+  let updated = Object.keys(obj).map((id) => {
+    return idfyObj(id, obj[id]);
+  })
+  return updated;
+}
+
+export { notify, loadUI, idfyObj, objectToArray };

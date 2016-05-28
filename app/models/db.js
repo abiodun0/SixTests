@@ -1,16 +1,18 @@
-var firebase = require('firebase/app');
+let firebase = require('firebase/app');
 require('firebase/auth');
 require('firebase/database');
 
-var config = {
+let config = {
   apiKey: "AIzaSyBvhOuLP2l4lHvwRLTYe6epxc9mThjMjMg",
-  // authDomain: "6ixtests.firebaseapp.com",
+  authDomain: "6ixtests.firebaseapp.com",
   databaseURL: "https://6ixtests.firebaseio.com",
   storageBucket: "project-8199958710675535383.appspot.com",
 };
 
-var app = firebase.initializeApp(config);
+let app = firebase.initializeApp(config);
 
-var database = firebase.database();
+let database = firebase.database();
 
-export default database
+let auth = firebase.auth();
+
+export { database, auth }
