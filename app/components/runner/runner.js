@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import request from 'superagent';
 import marked from 'marked';
 import runnerTemplate from './main.html';
 
@@ -12,22 +13,40 @@ const RunExamComponent = Vue.extend({
   data() {
     return {
       exam: {},
+      answers: {},
       questions: []
     }
   },
   route: {
     data(transition) {
-      let examId = this.$route.params.exam_id;
-      Exam.get(examId, (exam) => {
-        Question.all(examId, (questions) => {
-          transition.next({
-            exam: idfyObj(examId, exam),
-            questions: objectToArray(questions)
-          });
-          loadUI();
-        })
-      })
+      User.checkLoggedIn(user => {
+        if (!user) {
+          this.$route.router.go({ name: 'runner_home' });
+        }
+        let examId = this.$route.params.exam_id;
+        Exam.get(examId, (exam) => {
+          Question.all(examId, (questions) => {
+            transition.next({
+              user: user,
+              exam: idfyObj(examId, exam),
+              questions: objectToArray(questions)
+            });
+            loadUI();
+          })
+        });
+      });
 
+    },
+  },
+  methods: {
+    submitExam() {
+      let examId = this.$route.params.exam_id;
+      request.post('/scorer/' + examId + '/').send({
+        data: this.answers,
+        uid: this.user.uid
+      }).end((err, res) => {
+        // this.$route.router.go('/results')
+      });
     }
   },
   filters: {

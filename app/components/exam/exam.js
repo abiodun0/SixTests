@@ -15,8 +15,7 @@ const BaseExamComponent = Vue.extend({
   template: baseTemplate,
   data() {
     return {
-      user: {},
-      ExamFactory: {}
+      user: {}
     }
   },
   route: {
@@ -26,8 +25,7 @@ const BaseExamComponent = Vue.extend({
           this.$route.router.go({ name: 'home' });
         }
         transition.next({
-          user: user,
-          ExamFactory: Exam(user.uid)
+          user: user
         })
       });
     },
@@ -47,13 +45,15 @@ const ListExamComponent = Vue.extend({
   template: listTemplate,
   data() {
     return {
+      deletingExam: {},
       newExam: {},
-      exams: {}
+      exams: {},
+      index: -1
     }
   },
   route: {
     data(transition) {
-      this.$parent.ExamFactory.all((exams) => {
+      Exam.all((exams) => {
         transition.next({
           exams: objectToArray(exams)
         })
@@ -61,22 +61,65 @@ const ListExamComponent = Vue.extend({
     }
   },
   methods: {
-    showCreateModal(event) {
+    showCreateModal(editingFlag, index, item) {
+      this.index = -1;
+      this.newExam = {};
       this.$refs.createExamDialog.open();
+      console.log(item);
+      if(editingFlag === 'editing') {
+        this.newExam = _.assign({}, item);
+        this.index = index;
+      }
+    },
+    showDeleteConfirm(show, index, exam) {
+      if(show) {
+        if(exam) {
+          this.index = index;
+          this.deletingExam = exam;
+          this.$refs.deleteConfirmDialog.open();
+        }
+      } else {
+        if(this.deletingExam) {
+          // Delete the exam
+          Exam.delete(this.deletingExam.__id, error => {
+            if(!error) {
+              this.exams.splice(this.index, 1);
+              this.deletingExam = {};
+              notify("Successfully deleted the test");
+              this.$refs.deleteConfirmDialog.close();
+            }
+          })
+        }
+      }
     },
     createExam(event) {
-      this.$parent.ExamFactory.create(this.newExam, (err, key) => {
-        if(err) {
-          console.log("Error occured while trying to create exam.")
-        } else {
-          var dialog = document.querySelector('.create-exam-dialog');
-          let _fb_form = idfyObj(key, this.newExam);
-          this.exams.push(_fb_form);
-          this.newExam = {};
-          this.$refs.createExamDialog.close();
-          notify("Successfully added the test");
-        }
-      })
+      let uid = this.$parent.user.uid;
+      if(this.newExam.hasOwnProperty('__id')) {
+        Exam.update(this.newExam, (err, key) => {
+          if(!err) {
+            this.exams[this.index] = _.assignIn({}, this.newExam);
+            this.newExam = {};
+            this.index = -1;
+            notify("Successfully updated the test");
+            this.$refs.createExamDialog.close();
+          } else {
+            console.log("Error occured while trying to update exam");
+          }
+        });
+      } else {
+        // We're creating in this case
+        Exam.create(uid, this.newExam, (err, key) => {
+          if(!err) {
+            let _fb_form = idfyObj(key, this.newExam);
+            this.exams.push(_fb_form);
+            this.newExam = {};
+            this.$refs.createExamDialog.close();
+            notify("Successfully added the test");
+          } else {
+            console.log("Error occured while trying to create exam.")
+          }
+        })
+      }
     }
   }
 })
@@ -102,7 +145,7 @@ const SingleExamComponent = Vue.extend({
     },
     data(transition) {
       let examId = this.$route.params.exam_id;
-      this.$parent.ExamFactory.get(examId, (exam) => {
+      Exam.get(examId, (exam) => {
         Question.all(examId, (questions) => {
           console.log(questions);
           transition.next({
@@ -136,7 +179,8 @@ const SingleExamComponent = Vue.extend({
       this.resetQuestion();
     },
     createQuestion(event) {
-      Question.create(this.exam.__id, this.question, (err, key) => {
+      let uid = this.$parent.user.uid;
+      Question.create(uid, this.exam.__id, this.question, (err, key) => {
         if(err) {
           console.log("Error occured while trying to create question.")
         } else {

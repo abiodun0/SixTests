@@ -1,5 +1,5 @@
-let notify = (message) => {
-  var snackbarContainer = document.querySelector('#exam-notifications');
+let notify = message => {
+  let snackbarContainer = document.querySelector('#exam-notifications');
   snackbarContainer.MaterialSnackbar.showSnackbar({
     message: message
   });
@@ -16,11 +16,11 @@ let idfyObj = (key, obj) => {
   return obj;
 }
 
-let objectToArray = (obj) => {
+let objectToArray = obj => {
   if(!obj)
     return []
 
-  let updated = Object.keys(obj).map((id) => {
+  let updated = Object.keys(obj).map(id => {
     return idfyObj(id, obj[id]);
   })
   return updated;

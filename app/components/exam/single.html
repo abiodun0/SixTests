@@ -107,7 +107,7 @@
           <div class="mdl-tabs__panel" id="members-panel">
             <div class="padded-content spacious">
               <p class="form-subheader-text">Public URL</p>
-              <a v-link="{ path: '/runner/' + exam.__id }">View Exam</a>
+              <a v-link="{ path: '/runner/' + exam.__id }" target="_blank">View Exam</a>
               <p class="form-subheader-text spacer">Timing</p>
               <mdl-checkbox :checked.sync="exam.timed" class="mdl-js-ripple-effect">Timed</mdl-checkbox>
               <mdl-textfield label="Enter exam duration in seconds" :value.sync="exam.duration"></mdl-textfield>

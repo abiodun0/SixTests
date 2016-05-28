@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/live-server/live-server.js --ignore=build/lib"
+    "start": "python app.py"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +13,7 @@
     "firebase": "^3.0.1",
     "lodash": "^4.12.0",
     "marked": "^0.3.5",
+    "superagent": "^1.8.3",
     "vue": "^1.0.24",
     "vue-async-data": "^1.0.2",
     "vue-mdl": "^0.8.1"

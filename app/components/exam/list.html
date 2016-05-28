@@ -1,4 +1,11 @@
 <div class="padded-content">
+  <mdl-dialog v-ref:delete-confirm-dialog title="Deleting test">
+    <h4>Are you sure you want to delete this exam - {{deletingExam.name}}?</h4>
+    <template slot="actions">
+      <mdl-button v-on:click="showDeleteConfirm(false)">OK</mdl-button>
+      <mdl-button @click="$refs.deleteConfirmDialog.close">Cancel</mdl-button>
+    </template>
+  </mdl-dialog>
   <mdl-dialog v-ref:create-exam-dialog title="Create a test">
     <form action="#">
       <mdl-textfield label="Enter Test Name" :value.sync="newExam.name"></mdl-textfield>
@@ -24,7 +31,7 @@
       <h2 class="subheader-text">Listing out your exams</h2>
     </div>
     <div class="mdl-cell mdl-cell--6-col flex align-middle-right">
-      <mdl-button raised colored @click="showCreateModal" class="mdl-js-ripple-effect mdl-color--cyan">Create Exam</mdl-button>
+      <mdl-button raised colored @click="showCreateModal()" class="mdl-js-ripple-effect mdl-color--cyan">Create Exam</mdl-button>
     </div>
   </div>
   <div class="mdl-grid" v-if="!$loadingRouteData">
@@ -37,7 +44,15 @@
           {{ exam.description }}
         </div>
         <div class="mdl-card__actions mdl-card--border">
-          <mdl-anchor-button colored class="mdl-js-ripple-effect mdl-color-text--cyan" v-link="{ path: '/app/exams/' + exam.__id }">Get Started</mdl-anchor-button>
+          <mdl-anchor-button colored class="mdl-js-ripple-effect mdl-color-text--cyan" v-link="{ path: '/app/exams/' + exam.__id }">View Exam Details</mdl-anchor-button>
+        </div>
+        <div class="mdl-card__menu">
+          <mdl-button icon @click="showCreateModal('editing', $index, exam)" class="mdl-js-ripple-effect mdl-color-text--white mdl-button--icon">
+            <i class="material-icons">edit</i>
+          </mdl-button>
+          <mdl-button icon @click="showDeleteConfirm(true, $index, exam)" class="mdl-js-ripple-effect mdl-color-text--white mdl-button--icon">
+            <i class="material-icons">delete</i>
+          </mdl-button>
         </div>
       </div>
     </div>
