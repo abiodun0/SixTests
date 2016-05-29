@@ -1,13 +1,26 @@
 <div>
   <header class="horizontal">
-    <div class="shunted-container">
-      <nav>
+    <div class="shunted-container flex align-middle-left">
+      <nav class="fill">
         <div class="logo">
           <div class="responsive-wrapper">
             <img src="/build/img/logo.png" />
           </div>
         </div>
-      <nav>
+      </nav>
+      <div class="header-controls inverted">
+        <span class="user-information mdl-color-text--white">
+          Logged in as {{user.displayName}}
+        </span>
+        <img v-bind:src="user.photoURL" />
+        <mdl-button id="main-dropdown" class="mdl-button--icon mdl-color-text--white">
+          <i class="material-icons">more_vert</i>
+        </mdl-button>
+        <mdl-menu for="main-dropdown" class="mdl-menu--bottom-right">
+          <mdl-menu-item v-link="{ path: '/app/profile'}">Profile</mdl-menu-item>
+          <mdl-menu-item @click.prevent="logout">Logout</mdl-menu-item>
+        </mdl-menu>
+      </div>
     </div>
   </header>
   <main>

@@ -68,13 +68,11 @@
 
 	var _runner = __webpack_require__(17);
 
-	var _runner2 = _interopRequireDefault(_runner);
-
 	var _exam = __webpack_require__(23);
 
-	var _settings = __webpack_require__(24);
+	var _profile = __webpack_require__(38);
 
-	var _settings2 = _interopRequireDefault(_settings);
+	var _profile2 = _interopRequireDefault(_profile);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -93,9 +91,13 @@
 	    name: 'home',
 	    component: _home2.default
 	  },
+	  '/runner/home': {
+	    name: 'runnerhome',
+	    component: _runner.RunHomeComponent
+	  },
 	  '/runner/:exam_id': {
 	    name: 'runner',
-	    component: _runner2.default
+	    component: _runner.RunExamComponent
 	  },
 	  '/app': {
 	    component: _base2.default,
@@ -114,9 +116,9 @@
 	          }
 	        }
 	      },
-	      '/settings': {
-	        name: 'settings',
-	        component: _settings2.default
+	      '/profile': {
+	        name: 'profile',
+	        component: _profile2.default
 	      }
 	    }
 	  }
@@ -16670,7 +16672,7 @@
 /* 14 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  Some page\n  <a @click.prevent=\"loginUser\">Click here to login</a>\n</div>\n"
+	module.exports = "<div class=\"main-montage-abs flex\">\n  <div class=\"logo-container flex fill align-middle-center column-layout\">\n    <div class=\"montage-image\">\n      <img src=\"/build/img/logo_new.png\" />\n    </div>\n    <div class=\"montage-actions\">\n      <a class=\"main-montage-btn\" @click.prevent=\"loginUser\">Connect w/ Facebook</a>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
 /* 15 */
@@ -16702,7 +16704,7 @@
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"app-main\">\n  <!-- App Navigation -->\n  <header>\n    <nav>\n      <div class=\"logo\">\n        <div class=\"responsive-wrapper\">\n          <img src=\"/build/img/logo.png\" />\n        </div>\n      </div>\n      <ul class=\"nav-items\">\n        <li>\n          <a v-link=\"{ path: '/app/exams' }\">\n            <div class=\"navicon\">\n              <i class=\"material-icons\">dashboard</i>\n            </div>\n            <div class=\"navtext\">\n              Exams\n            </div>\n          </a>\n        </li>\n      </ul>\n    </nav>\n  </header>\n  <!-- Main App Display -->\n  <section class=\"main-app-display\">\n    <div id=\"exam-notifications\" class=\"mdl-js-snackbar mdl-snackbar\">\n      <div class=\"mdl-snackbar__text\"></div>\n      <button class=\"mdl-snackbar__action\" type=\"button\"></button>\n    </div>\n    <router-view></router-view>\n  </section>\n</div>\n"
+	module.exports = "<div class=\"app-main\">\n  <!-- App Navigation -->\n  <header>\n    <nav>\n      <div class=\"logo\">\n        <div class=\"responsive-wrapper\">\n          <img src=\"/build/img/logo_new_icon.png\" />\n        </div>\n      </div>\n      <ul class=\"nav-items\">\n        <li>\n          <a v-link=\"{ path: '/app/exams' }\">\n            <div class=\"navicon\">\n              <i class=\"material-icons\">dashboard</i>\n            </div>\n            <div class=\"navtext\">\n              Exams\n            </div>\n          </a>\n        </li>\n      </ul>\n    </nav>\n  </header>\n  <!-- Main App Display -->\n  <section class=\"main-app-display\">\n    <div id=\"exam-notifications\" class=\"mdl-js-snackbar mdl-snackbar\">\n      <div class=\"mdl-snackbar__text\"></div>\n      <button class=\"mdl-snackbar__action\" type=\"button\"></button>\n    </div>\n    <router-view></router-view>\n  </section>\n</div>\n"
 
 /***/ },
 /* 17 */
@@ -16713,6 +16715,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.RunExamComponent = exports.RunHomeComponent = undefined;
 
 	var _vue = __webpack_require__(1);
 
@@ -16730,17 +16733,29 @@
 
 	var _main2 = _interopRequireDefault(_main);
 
+	var _home = __webpack_require__(37);
+
+	var _home2 = _interopRequireDefault(_home);
+
 	var _utils = __webpack_require__(20);
 
 	var _exam = __webpack_require__(21);
 
 	var _exam2 = _interopRequireDefault(_exam);
 
+	var _user = __webpack_require__(6);
+
+	var _user2 = _interopRequireDefault(_user);
+
 	var _question = __webpack_require__(22);
 
 	var _question2 = _interopRequireDefault(_question);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var RunHomeComponent = _vue2.default.extend({
+	  template: _home2.default
+	});
 
 	var RunExamComponent = _vue2.default.extend({
 	  template: _main2.default,
@@ -16756,7 +16771,7 @@
 	    data: function data(transition) {
 	      var _this = this;
 
-	      User.checkLoggedIn(function (user) {
+	      _user2.default.checkLoggedIn(function (user) {
 	        if (!user) {
 	          _this.$route.router.go({ name: 'runner_home' });
 	        }
@@ -16790,7 +16805,8 @@
 	  }
 	});
 
-	exports.default = RunExamComponent;
+	exports.RunHomeComponent = RunHomeComponent;
+	exports.RunExamComponent = RunExamComponent;
 
 /***/ },
 /* 18 */
@@ -18088,7 +18104,7 @@
 /* 19 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <header class=\"horizontal\">\n    <div class=\"shunted-container\">\n      <nav>\n        <div class=\"logo\">\n          <div class=\"responsive-wrapper\">\n            <img src=\"/build/img/logo.png\" />\n          </div>\n        </div>\n      <nav>\n    </div>\n  </header>\n  <main>\n    <div class=\"shunted-container\">\n      <div class=\"test-container mdl-color--white mdl-shadow--2dp\" v-if=\"!$loadingRouteData\">\n        <h1>{{ exam.name }}</h1>\n        <div class=\"question-container column-layout flex align-top-left\" v-for=\"(qIdx, question) in questions\">\n          <div class=\"count\">Question #{{$index}}</div>\n          <div class=\"question-text fill\" v-html=\"question.text || '' | marked\"></div>\n          <div class=\"question-options\">\n            <div class=\"question-option flex align-middle-left\" v-for=\"option in question.options\">\n              <label for=\"question-correct-{{qIdx}}-{{$index}}\" class=\"mdl-radio mdl-js-radio mdl-js-ripple-effect\">\n                <input type=\"radio\" id=\"question-correct-{{qIdx}}-{{$index}}\" name=\"question-correct-{{qIdx}}\" class=\"mdl-radio__button\" v-model=\"answers[question.__id]\" value=\"{{$index}}\">\n              </label>\n              <div>\n                {{option.text}}\n              </div>\n            </div>\n          </div>\n        </div>\n        <mdl-button raised colored @click=\"submitExam()\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Submit Exam</mdl-button>\n      </div>\n    </div>\n  </main>\n</div>\n"
+	module.exports = "<div>\n  <header class=\"horizontal\">\n    <div class=\"shunted-container flex align-middle-left\">\n      <nav class=\"fill\">\n        <div class=\"logo\">\n          <div class=\"responsive-wrapper\">\n            <img src=\"/build/img/logo.png\" />\n          </div>\n        </div>\n      </nav>\n      <div class=\"header-controls inverted\">\n        <span class=\"user-information mdl-color-text--white\">\n          Logged in as {{user.displayName}}\n        </span>\n        <img v-bind:src=\"user.photoURL\" />\n        <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon mdl-color-text--white\">\n          <i class=\"material-icons\">more_vert</i>\n        </mdl-button>\n        <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n          <mdl-menu-item v-link=\"{ path: '/app/profile'}\">Profile</mdl-menu-item>\n          <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n        </mdl-menu>\n      </div>\n    </div>\n  </header>\n  <main>\n    <div class=\"shunted-container\">\n      <div class=\"test-container mdl-color--white mdl-shadow--2dp\" v-if=\"!$loadingRouteData\">\n        <h1>{{ exam.name }}</h1>\n        <div class=\"question-container column-layout flex align-top-left\" v-for=\"(qIdx, question) in questions\">\n          <div class=\"count\">Question #{{$index}}</div>\n          <div class=\"question-text fill\" v-html=\"question.text || '' | marked\"></div>\n          <div class=\"question-options\">\n            <div class=\"question-option flex align-middle-left\" v-for=\"option in question.options\">\n              <label for=\"question-correct-{{qIdx}}-{{$index}}\" class=\"mdl-radio mdl-js-radio mdl-js-ripple-effect\">\n                <input type=\"radio\" id=\"question-correct-{{qIdx}}-{{$index}}\" name=\"question-correct-{{qIdx}}\" class=\"mdl-radio__button\" v-model=\"answers[question.__id]\" value=\"{{$index}}\">\n              </label>\n              <div>\n                {{option.text}}\n              </div>\n            </div>\n          </div>\n        </div>\n        <mdl-button raised colored @click=\"submitExam()\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Submit Exam</mdl-button>\n      </div>\n    </div>\n  </main>\n</div>\n"
 
 /***/ },
 /* 20 */
@@ -18495,38 +18511,8 @@
 	exports.BaseExamComponent = BaseExamComponent;
 
 /***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	var _settings = __webpack_require__(25);
-
-	var _settings2 = _interopRequireDefault(_settings);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var SettingsComponent = _vue2.default.extend({
-	  template: _settings2.default
-	});
-
-	exports.default = SettingsComponent;
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class=\"padded-content\">\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n      <div class=\"padded-content spacious\">\n        Some Text\n      </div>\n    </div>\n  </div>\n</div>\n"
-
-/***/ },
+/* 24 */,
+/* 25 */,
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -34807,7 +34793,7 @@
 /* 30 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <div class=\"page-header flex\">\n    <div class=\"flex fill align-middle-left\">\n      <h1>Exams</h1>\n    </div>\n    <div class=\"header-controls\">\n      <span class=\"user-information\">\n        Logged in as {{user.displayName}}\n      </span>\n      <img v-bind:src=\"user.photoURL\" />\n      <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon\">\n        <i class=\"material-icons\">more_vert</i>\n      </mdl-button>\n      <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n        <mdl-menu-item v-link=\"{ path: '/app/settings'}\">Settings</mdl-menu-item>\n        <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n      </mdl-menu>\n    </div>\n  </div>\n  <router-view></router-view>\n</div>\n"
+	module.exports = "<div>\n  <div class=\"page-header flex\">\n    <div class=\"flex fill align-middle-left\">\n      <h1>Exams</h1>\n    </div>\n    <div class=\"header-controls\">\n      <span class=\"user-information\">\n        Logged in as {{user.displayName}}\n      </span>\n      <img v-bind:src=\"user.photoURL\" />\n      <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon\">\n        <i class=\"material-icons\">more_vert</i>\n      </mdl-button>\n      <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n        <mdl-menu-item v-link=\"{ path: '/app/profile'}\">Profile</mdl-menu-item>\n        <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n      </mdl-menu>\n    </div>\n  </div>\n  <router-view></router-view>\n</div>\n"
 
 /***/ },
 /* 31 */
@@ -36318,6 +36304,44 @@
 
 	module.exports = request;
 
+
+/***/ },
+/* 37 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"main-montage-abs flex\">\n  <div class=\"logo-container flex fill align-middle-center column-layout\">\n    <div class=\"montage-image\">\n      <img src=\"/build/img/logo_new.png\" />\n    </div>\n    <div class=\"montage-actions\">\n      <button class=\"main-montage-btn\">Connect w/ Facebook</button>\n    </div>\n  </div>\n</div>\n"
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _vue = __webpack_require__(1);
+
+	var _vue2 = _interopRequireDefault(_vue);
+
+	var _profile = __webpack_require__(39);
+
+	var _profile2 = _interopRequireDefault(_profile);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ProfileComponent = _vue2.default.extend({
+	  template: _profile2.default
+	});
+
+	exports.default = ProfileComponent;
+
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"padded-content\">\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n      <div class=\"padded-content spacious\">\n        Some Text\n      </div>\n    </div>\n  </div>\n</div>\n"
 
 /***/ }
 /******/ ]);

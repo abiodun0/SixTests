@@ -3,13 +3,13 @@ import VueMdl from 'vue-mdl'
 import VueRouter from 'vue-router';
 import HomeComponent from './components/home/home';
 import BaseAppComponent from './components/base/base';
-import RunExamComponent from './components/runner/runner';
+import { RunHomeComponent, RunExamComponent } from './components/runner/runner';
 import {
   ListExamComponent,
   SingleExamComponent,
   BaseExamComponent
 } from './components/exam/exam';
-import SettingsComponent from './components/settings/settings'
+import ProfileComponent from './components/profile/profile'
 
 Vue.use(VueRouter);
 Vue.use(VueMdl);
@@ -25,6 +25,10 @@ router.map({
   '/': {
     name: 'home',
     component: HomeComponent
+  },
+  '/runner/home': {
+    name: 'runnerhome',
+    component: RunHomeComponent
   },
   '/runner/:exam_id': {
     name: 'runner',
@@ -47,9 +51,9 @@ router.map({
           }
         }
       },
-      '/settings': {
-        name: 'settings',
-        component: SettingsComponent
+      '/profile': {
+        name: 'profile',
+        component: ProfileComponent
       },
     }
   }

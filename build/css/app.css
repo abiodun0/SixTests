@@ -411,6 +411,31 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   margin-right: 5px;
 }
 
+.main-montage-abs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: #00212F;
+}
+
+.montage-actions {
+  margin-top: 70px;
+}
+
+.main-montage-btn {
+  display: inline-block;
+  background: #002B71;
+  color: #FFF;
+  font-size: 1.9em;
+  font-family: "Nunito", sans-serif;
+  font-weight: 700;
+  padding: 20px 27px;
+  border: none;
+  cursor: pointer;
+}
+
 /* MDL Overrides */
 
 .mdl-list__item {

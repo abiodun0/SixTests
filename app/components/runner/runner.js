@@ -2,11 +2,17 @@ import Vue from 'vue';
 import request from 'superagent';
 import marked from 'marked';
 import runnerTemplate from './main.html';
+import runnerHomeTemplate from './home.html';
 
-import { notify, loadUI, idfyObj, objectToArray } from '../utils'
+import { notify, loadUI, idfyObj, objectToArray } from '../utils';
 
-import Exam from '../../models/exam'
-import Question from '../../models/question'
+import Exam from '../../models/exam';
+import User from '../../models/user';
+import Question from '../../models/question';
+
+const RunHomeComponent = Vue.extend({
+  template: runnerHomeTemplate,
+})
 
 const RunExamComponent = Vue.extend({
   template: runnerTemplate,
@@ -54,4 +60,4 @@ const RunExamComponent = Vue.extend({
   }
 })
 
-export default RunExamComponent;
+export { RunHomeComponent, RunExamComponent };
