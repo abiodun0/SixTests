@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request
 from firebase import firebase
+import os
 
+server_port = os.getenv('PORT') or 5000
 app = Flask(__name__, template_folder='.', static_folder='build')
+
 firebase = firebase.FirebaseApplication(
     'https://6ixtests.firebaseio.com',
     None
@@ -31,4 +34,4 @@ def home(path):
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(port=8080, debug=True)
+    app.run(port=server_port, debug=True)
