@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from firebase import firebase
 import os
 
-server_port = os.getenv('PORT') or 5000
+server_port = int(os.getenv('PORT')) or 5000
 app = Flask(__name__, template_folder='.', static_folder='build')
 
 firebase = firebase.FirebaseApplication(
