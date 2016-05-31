@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
 from pyfirebase import Firebase
-import os
 
 app = Flask(__name__, template_folder='.', static_folder='build')
 
@@ -34,3 +33,6 @@ def scorer(exam_id):
 @app.route('/<path:path>')
 def home(path):
     return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run()
