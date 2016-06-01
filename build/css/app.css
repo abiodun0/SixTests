@@ -136,6 +136,10 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   padding: 15px 35px;
 }
 
+.padded-top {
+  padding-top: 150px;
+}
+
 .app-section-header {
   background: #fff;
   font-size: 1.2em;
@@ -205,6 +209,11 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 99;
+}
+
+.dimmed {
+  background: rgba(255,255,255,0.6)
 }
 
 .empty-message {
@@ -375,15 +384,23 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
   margin: 0 auto;
 }
 
-.test-container {
-  margin-top: 150px;
-  padding: 70px 100px;
+.test-controls {
+  margin-top: 40px;
+  text-align: right;
+}
+
+.test-container, .report-container {
+  padding: 70px 90px;
 }
 
 .test-container h1 {
   font-size: 2.8em;
   font-weight: 300;
   margin-bottom: 40px;
+}
+
+.test-container h1.test-title {
+  margin-top: 0;
 }
 
 .question-container {
@@ -409,6 +426,49 @@ header nav .nav-items li:hover a .navicon, header nav .nav-items li .v-link-acti
 .test-container .question-options .question-option .mdl-radio {
   height: 24px;
   margin-right: 5px;
+}
+
+.report-container {
+  text-align: center;
+}
+
+.report-container h1 {
+  font-size: 2.7em;
+  font-weight: 300;
+  color: #545454;
+}
+
+.report-container .report-header {
+  margin: 60px 0;
+}
+
+.report-container .report-header h1 {
+  font-family: "Nunito", sans-serif;
+  font-size: 2.0em;
+  color: #959595;
+  margin-top: 50px;
+  border-bottom: dotted 5px #EFEFEF;
+  padding-bottom: 40px;
+}
+
+.report-container .test-score {
+  margin: 90px 0;
+}
+
+.report-container .test-score span {
+  background: #73D0F4;
+  padding: 25px 45px;
+  font-size: 2.0em;
+  color: #fff;
+  border-radius: 50px;
+}
+
+.rounded-container {
+  display: inline-block;
+  border: solid 5px #3D6889;
+  padding: 15px;
+  border-radius: 50%;
+  box-shadow: 0 3px 4px 0 #73D0F4;
 }
 
 .main-montage-abs {

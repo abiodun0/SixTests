@@ -20,7 +20,11 @@ const RunExamComponent = Vue.extend({
     return {
       exam: {},
       answers: {},
-      questions: []
+      questions: [],
+      examReport: {},
+      markingExam: false,
+      finishedExam: false,
+      currentQuestion: 0
     }
   },
   route: {
@@ -41,18 +45,43 @@ const RunExamComponent = Vue.extend({
           })
         });
       });
-
     },
   },
   methods: {
-    submitExam() {
+    submitExam($event) {
+      this.markingExam = true
       let examId = this.$route.params.exam_id;
       request.post('/scorer/' + examId + '/').send({
         data: this.answers,
         uid: this.user.uid
       }).end((err, res) => {
-        // this.$route.router.go('/results')
+        this.examReport = res.body
+        this.markingExam = false
+        this.finishedExam = true
       });
+    },
+    nextQuestion($event) {
+      if(this.currentQuestion < this.questions.length - 1) {
+        this.currentQuestion += 1
+        loadUI();
+      }
+    },
+    prevQuestion($event) {
+      if(this.currentQuestion > 0) {
+        this.currentQuestion -= 1
+        loadUI();
+      }
+    },
+    resetExam($event) {
+      this.currentQuestion = 0;
+      this.answers = {}
+      this.examReport = {}
+      this.markingExam = false
+      this.finishedExam = false
+      this.currentQuestion = 0
+    },
+    closeWindow($event) {
+      window.close()
     }
   },
   filters: {
