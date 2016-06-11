@@ -65,7 +65,6 @@ const ListExamComponent = Vue.extend({
       this.index = -1;
       this.newExam = {};
       this.$refs.createExamDialog.open();
-      console.log(item);
       if(editingFlag === 'editing') {
         this.newExam = _.assign({}, item);
         this.index = index;
@@ -83,7 +82,7 @@ const ListExamComponent = Vue.extend({
           // Delete the exam
           Exam.delete(this.deletingExam.__id, error => {
             if(!error) {
-              this.exams.splice(this.index, 1);
+              this.exams.splice(this.index, 1); // you could do this.exams.$remove(this.index)
               this.deletingExam = {};
               notify("Successfully deleted the test");
               this.$refs.deleteConfirmDialog.close();
@@ -97,11 +96,11 @@ const ListExamComponent = Vue.extend({
       if(this.newExam.hasOwnProperty('__id')) {
         Exam.update(this.newExam, (err, key) => {
           if(!err) {
-            this.exams[this.index] = _.assignIn({}, this.newExam);
+            this.exams.$set(this.index, this.newExam);
             this.newExam = {};
             this.index = -1;
-            notify("Successfully updated the test");
             this.$refs.createExamDialog.close();
+            notify("Successfully updated the test");
           } else {
             console.log("Error occured while trying to update exam");
           }
