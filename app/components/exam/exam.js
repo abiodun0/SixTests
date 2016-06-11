@@ -65,7 +65,6 @@ const ListExamComponent = Vue.extend({
       this.index = -1;
       this.newExam = {};
       this.$refs.createExamDialog.open();
-      console.log(item);
       if(editingFlag === 'editing') {
         this.newExam = _.assign({}, item);
         this.index = index;
@@ -83,7 +82,7 @@ const ListExamComponent = Vue.extend({
           // Delete the exam
           Exam.delete(this.deletingExam.__id, error => {
             if(!error) {
-              this.exams.splice(this.index, 1);
+              this.exams.splice(this.index, 1); // you could do this.exams.$remove(this.index)
               this.deletingExam = {};
               notify("Successfully deleted the test");
               this.$refs.deleteConfirmDialog.close();
