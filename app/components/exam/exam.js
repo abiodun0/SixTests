@@ -96,11 +96,11 @@ const ListExamComponent = Vue.extend({
       if(this.newExam.hasOwnProperty('__id')) {
         Exam.update(this.newExam, (err, key) => {
           if(!err) {
-            this.exams[this.index] = _.assignIn({}, this.newExam);
+            this.exams.$set(this.index, this.newExam);
             this.newExam = {};
             this.index = -1;
-            notify("Successfully updated the test");
             this.$refs.createExamDialog.close();
+            notify("Successfully updated the test");
           } else {
             console.log("Error occured while trying to update exam");
           }
