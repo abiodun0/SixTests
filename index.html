@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='lib/material-design-lite/material.min.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='lib/flxgrid/dist/css/flexgrid.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/sweetalert/dist/sweetalert.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/sweetalert/themes/google/google.css') }}" />
     <!-- Production -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <!-- Development -->
@@ -20,6 +22,7 @@
       <router-view></router-view>
     </div>
   </body>
+  <script src="{{ url_for('static', filename='lib/sweetalert/dist/sweetalert.min.js') }}"></script>
   <script src="{{ url_for('static', filename='lib/material-design-lite/material.min.js') }}"></script>
   <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 </html>

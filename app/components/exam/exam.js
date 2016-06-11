@@ -45,7 +45,6 @@ const ListExamComponent = Vue.extend({
   template: listTemplate,
   data() {
     return {
-      deletingExam: {},
       newExam: {},
       exams: {},
       index: -1
@@ -53,7 +52,8 @@ const ListExamComponent = Vue.extend({
   },
   route: {
     data(transition) {
-      Exam.all((exams) => {
+      let uid = this.$parent.user.uid;
+      Exam.all(uid, (exams) => {
         transition.next({
           exams: objectToArray(exams)
         })
@@ -70,26 +70,22 @@ const ListExamComponent = Vue.extend({
         this.index = index;
       }
     },
-    showDeleteConfirm(show, index, exam) {
-      if(show) {
-        if(exam) {
-          this.index = index;
-          this.deletingExam = exam;
-          this.$refs.deleteConfirmDialog.open();
-        }
-      } else {
-        if(this.deletingExam) {
-          // Delete the exam
-          Exam.delete(this.deletingExam.__id, error => {
-            if(!error) {
-              this.exams.splice(this.index, 1); // you could do this.exams.$remove(this.index)
-              this.deletingExam = {};
-              notify("Successfully deleted the test");
-              this.$refs.deleteConfirmDialog.close();
-            }
-          })
-        }
-      }
+    deleteExam(index, exam) {
+      swal({
+        title: "Are you sure?",
+        text: "You are about to delete this exam!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: true
+      }, () => {
+        Exam.delete(exam.__id, error => {
+          if(!error) {
+            this.exams.splice(index, 1); // you could do this.exams.$remove(this.index)
+            notify("Successfully deleted the test");
+          }
+        })
+      });
     },
     createExam(event) {
       let uid = this.$parent.user.uid;
@@ -106,7 +102,6 @@ const ListExamComponent = Vue.extend({
           }
         });
       } else {
-        // We're creating in this case
         Exam.create(uid, this.newExam, (err, key) => {
           if(!err) {
             let _fb_form = idfyObj(key, this.newExam);
@@ -191,14 +186,23 @@ const SingleExamComponent = Vue.extend({
       })
     },
     deleteQuestion(id, idx, event) {
-      Question.delete(this.exam.__id, id, (err) => {
-        if(err) {
-          console.log("Error occured while trying to delete question.")
-        } else {
-          this.questions.splice(idx, 1);
-          notify("Successfully deleted the question");
-        }
-      })
+      swal({
+        title: "Are you sure?",
+        text: "You are about to delete this question from this exam!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: true
+      }, () => {
+        Question.delete(this.exam.__id, id, (err) => {
+          if(err) {
+            console.log("Error occured while trying to delete question.")
+          } else {
+            this.questions.splice(idx, 1);
+            notify("Successfully deleted the question");
+          }
+        })
+      });
     }
   },
   filters: {

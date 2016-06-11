@@ -4,8 +4,8 @@ let baseRef = database.ref('exams');
 let baseQuestionRef = database.ref('questions')
 
 let Exam =  {
-  all(cb) {
-    baseRef.once('value', snapshot => {
+  all(uid, cb) {
+    baseRef.orderByChild('uid').equalTo(uid).once('value', snapshot => {
       cb(snapshot.val());
     })
   },

@@ -1,12 +1,5 @@
 <div class="padded-content">
-  <mdl-dialog v-ref:delete-confirm-dialog title="Deleting test">
-    <h4>Are you sure you want to delete this exam - {{deletingExam.name}}?</h4>
-    <template slot="actions">
-      <mdl-button v-on:click="showDeleteConfirm(false)">OK</mdl-button>
-      <mdl-button @click="$refs.deleteConfirmDialog.close">Cancel</mdl-button>
-    </template>
-  </mdl-dialog>
-  <mdl-dialog v-ref:create-exam-dialog title="Create a test">
+  <mdl-dialog v-ref:create-exam-dialog v-bind:title="index !== -1 ? 'Editing Test' : 'Create a test'">
     <form action="#">
       <mdl-textfield label="Enter Test Name" :value.sync="newExam.name"></mdl-textfield>
       <mdl-textfield label="Test Description" :value.sync="newExam.description" textarea rows="3"></mdl-textfield>
@@ -50,7 +43,7 @@
           <mdl-button icon @click="showCreateModal('editing', $index, exam)" class="mdl-js-ripple-effect mdl-color-text--white mdl-button--icon">
             <i class="material-icons">edit</i>
           </mdl-button>
-          <mdl-button icon @click="showDeleteConfirm(true, $index, exam)" class="mdl-js-ripple-effect mdl-color-text--white mdl-button--icon">
+          <mdl-button icon @click="deleteExam($index, exam)" class="mdl-js-ripple-effect mdl-color-text--white mdl-button--icon">
             <i class="material-icons">delete</i>
           </mdl-button>
         </div>
