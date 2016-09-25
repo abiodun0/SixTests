@@ -58,70 +58,83 @@
 
 	var _vueRouter2 = _interopRequireDefault(_vueRouter);
 
-	var _home = __webpack_require__(5);
+	var _vueValidator = __webpack_require__(5);
 
-	var _home2 = _interopRequireDefault(_home);
+	var _vueValidator2 = _interopRequireDefault(_vueValidator);
 
-	var _base = __webpack_require__(15);
+	var _Home = __webpack_require__(43);
 
-	var _base2 = _interopRequireDefault(_base);
+	var _Home2 = _interopRequireDefault(_Home);
 
-	var _runner = __webpack_require__(17);
+	var _Base = __webpack_require__(39);
 
-	var _exam = __webpack_require__(30);
+	var _Base2 = _interopRequireDefault(_Base);
 
-	var _profile = __webpack_require__(36);
+	var _ExamBase = __webpack_require__(41);
 
-	var _profile2 = _interopRequireDefault(_profile);
+	var _ExamBase2 = _interopRequireDefault(_ExamBase);
+
+	var _ExamSingle = __webpack_require__(47);
+
+	var _ExamSingle2 = _interopRequireDefault(_ExamSingle);
+
+	var _ExamList = __webpack_require__(46);
+
+	var _ExamList2 = _interopRequireDefault(_ExamList);
+
+	var _Runner = __webpack_require__(53);
+
+	var _Runner2 = _interopRequireDefault(_Runner);
+
+	var _Profile = __webpack_require__(56);
+
+	var _Profile2 = _interopRequireDefault(_Profile);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	_vue2.default.use(_vueRouter2.default);
 	_vue2.default.use(_vueMdl2.default);
+	_vue2.default.use(_vueValidator2.default);
 
 	var App = _vue2.default.extend({});
 
 	var router = new _vueRouter2.default({
-	  hashbang: false,
-	  history: true
+	    hashbang: false,
+	    history: true
 	});
 
 	router.map({
-	  '/': {
-	    name: 'home',
-	    component: _home2.default
-	  },
-	  '/runner/home': {
-	    name: 'runnerhome',
-	    component: _runner.RunHomeComponent
-	  },
-	  '/runner/:exam_id': {
-	    name: 'runner',
-	    component: _runner.RunExamComponent
-	  },
-	  '/app': {
-	    component: _base2.default,
-	    subRoutes: {
-	      '/exams': {
-	        name: 'exams',
-	        component: _exam.BaseExamComponent,
+	    '/': {
+	        name: 'home',
+	        component: _Home2.default
+	    },
+	    '/runner/:examId': {
+	        name: 'runner',
+	        component: _Runner2.default
+	    },
+	    '/app': {
+	        component: _Base2.default,
 	        subRoutes: {
-	          '/': {
-	            name: 'allexams',
-	            component: _exam.ListExamComponent
-	          },
-	          '/:exam_id': {
-	            name: 'singleexam',
-	            component: _exam.SingleExamComponent
-	          }
+	            '/exams': {
+	                name: 'exams',
+	                component: _ExamBase2.default,
+	                subRoutes: {
+	                    '/': {
+	                        name: 'allexams',
+	                        component: _ExamList2.default
+	                    },
+	                    '/:examId': {
+	                        name: 'singleexam',
+	                        component: _ExamSingle2.default
+	                    }
+	                }
+	            },
+	            '/profile': {
+	                name: 'profile',
+	                component: _Profile2.default
+	            }
 	        }
-	      },
-	      '/profile': {
-	        name: 'profile',
-	        component: _profile2.default
-	      }
 	    }
-	  }
 	});
 
 	router.start(App, '#app');
@@ -131,7 +144,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {/*!
-	 * Vue.js v1.0.24
+	 * Vue.js v1.0.25
 	 * (c) 2016 Evan You
 	 * Released under the MIT License.
 	 */
@@ -530,10 +543,15 @@
 
 	// UA sniffing for working around browser-specific quirks
 	var UA = inBrowser && window.navigator.userAgent.toLowerCase();
+	var isIE = UA && UA.indexOf('trident') > 0;
 	var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
 	var isAndroid = UA && UA.indexOf('android') > 0;
 	var isIos = UA && /(iphone|ipad|ipod|ios)/i.test(UA);
-	var isWechat = UA && UA.indexOf('micromessenger') > 0;
+	var iosVersionMatch = isIos && UA.match(/os ([\d_]+)/);
+	var iosVersion = iosVersionMatch && iosVersionMatch[1].split('_');
+
+	// detecting iOS UIWebView by indexedDB
+	var hasMutationObserverBug = iosVersion && Number(iosVersion[0]) >= 9 && Number(iosVersion[1]) >= 3 && !window.indexedDB;
 
 	var transitionProp = undefined;
 	var transitionEndEvent = undefined;
@@ -574,7 +592,7 @@
 	  }
 
 	  /* istanbul ignore if */
-	  if (typeof MutationObserver !== 'undefined' && !(isWechat && isIos)) {
+	  if (typeof MutationObserver !== 'undefined' && !hasMutationObserverBug) {
 	    var counter = 1;
 	    var observer = new MutationObserver(nextTickHandler);
 	    var textNode = document.createTextNode(counter);
@@ -646,12 +664,12 @@
 
 	p.put = function (key, value) {
 	  var removed;
-	  if (this.size === this.limit) {
-	    removed = this.shift();
-	  }
 
 	  var entry = this.get(key, true);
 	  if (!entry) {
+	    if (this.size === this.limit) {
+	      removed = this.shift();
+	    }
 	    entry = {
 	      key: key
 	    };
@@ -896,7 +914,7 @@
 	  var unsafeOpen = escapeRegex(config.unsafeDelimiters[0]);
 	  var unsafeClose = escapeRegex(config.unsafeDelimiters[1]);
 	  tagRE = new RegExp(unsafeOpen + '((?:.|\\n)+?)' + unsafeClose + '|' + open + '((?:.|\\n)+?)' + close, 'g');
-	  htmlRE = new RegExp('^' + unsafeOpen + '.*' + unsafeClose + '$');
+	  htmlRE = new RegExp('^' + unsafeOpen + '((?:.|\\n)+?)' + unsafeClose + '$');
 	  // reset cache
 	  cache = new Cache(1000);
 	}
@@ -1683,7 +1701,8 @@
 	      return (/HTMLUnknownElement/.test(el.toString()) &&
 	        // Chrome returns unknown for several HTML5 elements.
 	        // https://code.google.com/p/chromium/issues/detail?id=540526
-	        !/^(data|time|rtc|rb)$/.test(tag)
+	        // Firefox returns unknown for some "Interactive elements."
+	        !/^(data|time|rtc|rb|details|dialog|summary)$/.test(tag)
 	      );
 	    }
 	  };
@@ -2019,7 +2038,9 @@
 	  }
 	  if (child.mixins) {
 	    for (var i = 0, l = child.mixins.length; i < l; i++) {
-	      parent = mergeOptions(parent, child.mixins[i], vm);
+	      var mixin = child.mixins[i];
+	      var mixinOptions = mixin.prototype instanceof Vue ? mixin.options : mixin;
+	      parent = mergeOptions(parent, mixinOptions, vm);
 	    }
 	  }
 	  for (key in parent) {
@@ -2447,10 +2468,13 @@
 		hasProto: hasProto,
 		inBrowser: inBrowser,
 		devtools: devtools,
+		isIE: isIE,
 		isIE9: isIE9,
 		isAndroid: isAndroid,
 		isIos: isIos,
-		isWechat: isWechat,
+		iosVersionMatch: iosVersionMatch,
+		iosVersion: iosVersion,
+		hasMutationObserverBug: hasMutationObserverBug,
 		get transitionProp () { return transitionProp; },
 		get transitionEndEvent () { return transitionEndEvent; },
 		get animationProp () { return animationProp; },
@@ -2938,7 +2962,9 @@
 	var restoreRE = /"(\d+)"/g;
 	var pathTestRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?'\]|\[".*?"\]|\[\d+\]|\[[A-Za-z_$][\w$]*\])*$/;
 	var identRE = /[^\w$\.](?:[A-Za-z_$][\w$]*)/g;
-	var booleanLiteralRE = /^(?:true|false)$/;
+	var literalValueRE$1 = /^(?:true|false|null|undefined|Infinity|NaN)$/;
+
+	function noop() {}
 
 	/**
 	 * Save / Rewrite / Restore
@@ -3020,7 +3046,7 @@
 	  // save strings and object literal keys
 	  var body = exp.replace(saveRE, save).replace(wsRE, '');
 	  // rewrite all paths
-	  // pad 1 space here becaue the regex matches 1 extra char
+	  // pad 1 space here because the regex matches 1 extra char
 	  body = (' ' + body).replace(identRE, rewrite).replace(restoreRE, restore);
 	  return makeGetterFn(body);
 	}
@@ -3041,7 +3067,15 @@
 	    return new Function('scope', 'return ' + body + ';');
 	    /* eslint-enable no-new-func */
 	  } catch (e) {
-	    process.env.NODE_ENV !== 'production' && warn('Invalid expression. ' + 'Generated function body: ' + body);
+	    if (process.env.NODE_ENV !== 'production') {
+	      /* istanbul ignore if */
+	      if (e.toString().match(/unsafe-eval|CSP/)) {
+	        warn('It seems you are using the default build of Vue.js in an environment ' + 'with Content Security Policy that prohibits unsafe-eval. ' + 'Use the CSP-compliant build instead: ' + 'http://vuejs.org/guide/installation.html#CSP-compliant-build');
+	      } else {
+	        warn('Invalid expression. ' + 'Generated function body: ' + body);
+	      }
+	    }
+	    return noop;
 	  }
 	}
 
@@ -3103,8 +3137,8 @@
 
 	function isSimplePath(exp) {
 	  return pathTestRE.test(exp) &&
-	  // don't treat true/false as paths
-	  !booleanLiteralRE.test(exp) &&
+	  // don't treat literal values as paths
+	  !literalValueRE$1.test(exp) &&
 	  // Math constants e.g. Math.PI, Math.E etc.
 	  exp.slice(0, 5) !== 'Math.';
 	}
@@ -3583,6 +3617,7 @@
 
 	var tagRE$1 = /<([\w:-]+)/;
 	var entityRE = /&#?\w+?;/;
+	var commentRE = /<!--/;
 
 	/**
 	 * Convert a string template to a DocumentFragment.
@@ -3605,8 +3640,9 @@
 	  var frag = document.createDocumentFragment();
 	  var tagMatch = templateString.match(tagRE$1);
 	  var entityMatch = entityRE.test(templateString);
+	  var commentMatch = commentRE.test(templateString);
 
-	  if (!tagMatch && !entityMatch) {
+	  if (!tagMatch && !entityMatch && !commentMatch) {
 	    // text only, return a single text node.
 	    frag.appendChild(document.createTextNode(templateString));
 	  } else {
@@ -4573,7 +4609,7 @@
 	   * the filters. This is passed to and called by the watcher.
 	   *
 	   * It is necessary for this to be called during the
-	   * wathcer's dependency collection phase because we want
+	   * watcher's dependency collection phase because we want
 	   * the v-for to update when the source Object is mutated.
 	   */
 
@@ -4916,7 +4952,10 @@
 	  },
 
 	  update: function update(value) {
-	    this.el.value = _toString(value);
+	    // #3029 only update when the value changes. This prevent
+	    // browsers from overwriting values like selectionStart
+	    value = _toString(value);
+	    if (value !== this.el.value) this.el.value = value;
 	  },
 
 	  unbind: function unbind() {
@@ -4965,6 +5004,8 @@
 	var select = {
 
 	  bind: function bind() {
+	    var _this = this;
+
 	    var self = this;
 	    var el = this.el;
 
@@ -4996,11 +5037,16 @@
 	    // selectedIndex with value -1 to 0 when the element
 	    // is appended to a new parent, therefore we have to
 	    // force a DOM update whenever that happens...
-	    this.vm.$on('hook:attached', this.forceUpdate);
+	    this.vm.$on('hook:attached', function () {
+	      nextTick(_this.forceUpdate);
+	    });
 	  },
 
 	  update: function update(value) {
 	    var el = this.el;
+	    if (!inDoc(el)) {
+	      return nextTick(this.forceUpdate);
+	    }
 	    el.selectedIndex = -1;
 	    var multi = this.multiple && isArray(value);
 	    var options = el.options;
@@ -6266,7 +6312,7 @@
 	  if (value === undefined) {
 	    value = getPropDefaultValue(vm, prop);
 	  }
-	  value = coerceProp(prop, value);
+	  value = coerceProp(prop, value, vm);
 	  var coerced = value !== rawValue;
 	  if (!assertProp(prop, value, vm)) {
 	    value = undefined;
@@ -6385,13 +6431,17 @@
 	 * @return {*}
 	 */
 
-	function coerceProp(prop, value) {
+	function coerceProp(prop, value, vm) {
 	  var coerce = prop.options.coerce;
 	  if (!coerce) {
 	    return value;
 	  }
-	  // coerce is a function
-	  return coerce(value);
+	  if (typeof coerce === 'function') {
+	    return coerce(value);
+	  } else {
+	    process.env.NODE_ENV !== 'production' && warn('Invalid coerce for prop "' + prop.name + '": expected function, got ' + typeof coerce + '.', vm);
+	    return value;
+	  }
 	}
 
 	/**
@@ -6923,10 +6973,9 @@
 	    // resolve on owner vm
 	    var hooks = resolveAsset(this.vm.$options, 'transitions', id);
 	    id = id || 'v';
+	    oldId = oldId || 'v';
 	    el.__v_trans = new Transition(el, id, hooks, this.vm);
-	    if (oldId) {
-	      removeClass(el, oldId + '-transition');
-	    }
+	    removeClass(el, oldId + '-transition');
 	    addClass(el, id + '-transition');
 	  }
 	};
@@ -7351,7 +7400,7 @@
 	          if (token.html) {
 	            replace(node, parseTemplate(value, true));
 	          } else {
-	            node.data = value;
+	            node.data = _toString(value);
 	          }
 	        } else {
 	          vm._bindDir(token.descriptor, node, host, scope);
@@ -8335,7 +8384,7 @@
 	  };
 	}
 
-	function noop() {}
+	function noop$1() {}
 
 	/**
 	 * A directive links a DOM element with a piece of data,
@@ -8434,7 +8483,7 @@
 	        }
 	      };
 	    } else {
-	      this._update = noop;
+	      this._update = noop$1;
 	    }
 	    var preProcess = this._preProcess ? bind(this._preProcess, this) : null;
 	    var postProcess = this._postProcess ? bind(this._postProcess, this) : null;
@@ -9872,7 +9921,7 @@
 
 	  json: {
 	    read: function read(value, indent) {
-	      return typeof value === 'string' ? value : JSON.stringify(value, null, Number(indent) || 2);
+	      return typeof value === 'string' ? value : JSON.stringify(value, null, arguments.length > 1 ? indent : 2);
 	    },
 	    write: function write(value) {
 	      try {
@@ -10130,7 +10179,9 @@
 	          }
 	        }
 	        if (type === 'component' && isPlainObject(definition)) {
-	          definition.name = id;
+	          if (!definition.name) {
+	            definition.name = id;
+	          }
 	          definition = Vue.extend(definition);
 	        }
 	        this.options[type + 's'][id] = definition;
@@ -10145,7 +10196,7 @@
 
 	installGlobalAPI(Vue);
 
-	Vue.version = '1.0.24';
+	Vue.version = '1.0.25';
 
 	// devtools global hook
 	/* istanbul ignore next */
@@ -10167,8 +10218,94 @@
 /***/ function(module, exports) {
 
 	// shim for using process in browser
-
 	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
+	(function () {
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
+	    }
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
+	    }
+	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -10193,7 +10330,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = setTimeout(cleanUpNextTick);
+	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -10210,7 +10347,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    clearTimeout(timeout);
+	    runClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -10222,7 +10359,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
+	        runTimeout(drainQueue);
 	    }
 	};
 
@@ -11045,7 +11182,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/toggles/checkbox.vue"
+		  var id = "./checkbox.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -11138,7 +11275,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/toggles/radio.vue"
+		  var id = "./radio.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -11675,7 +11812,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/button.vue"
+		  var id = "./button.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -11769,7 +11906,7 @@
 	/* 72 */
 	/***/ function(module, exports) {
 
-		module.exports = "<button v-bind:disabled=\"disabled\" v-bind:class=\"cssClasses\" class=\"mdl-button mdl-js-button\"><slot><i v-if=\"icon\" class=\"material-icon\">{{icon}}</i></slot></button>";
+		module.exports = "<button v-bind:disabled=\"disabled\" v-bind:class=\"cssClasses\" class=\"mdl-button mdl-js-button\"><slot><i v-if=\"icon\" class=\"material-icons\">{{icon}}</i></slot></button>";
 
 	/***/ },
 	/* 73 */
@@ -11791,7 +11928,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/anchor-button.vue"
+		  var id = "./anchor-button.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -11823,7 +11960,7 @@
 	/* 75 */
 	/***/ function(module, exports) {
 
-		module.exports = "<a v-bind:disabled=\"disabled\" v-bind:class=\"cssClasses\" class=\"mdl-button mdl-js-button\"><slot><i v-if=\"icon\" class=\"material-icon\">{{icon}}</i></slot></a>";
+		module.exports = "<a v-bind:disabled=\"disabled\" v-bind:class=\"cssClasses\" class=\"mdl-button mdl-js-button\"><slot><i v-if=\"icon\" class=\"material-icons\">{{icon}}</i></slot></a>";
 
 	/***/ },
 	/* 76 */
@@ -11845,7 +11982,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/progress.vue"
+		  var id = "./progress.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -11930,7 +12067,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/spinner.vue"
+		  var id = "./spinner.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -11997,7 +12134,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/toggles/icon-toggle.vue"
+		  var id = "./icon-toggle.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12060,7 +12197,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/slider.vue"
+		  var id = "./slider.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12159,7 +12296,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/toggles/switch.vue"
+		  var id = "./switch.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12216,7 +12353,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/textfield.vue"
+		  var id = "./textfield.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12255,6 +12392,12 @@
 		      required: false
 		    },
 		    disabled: {
+		      type: [Boolean, String],
+		      fill: true,
+		      required: false,
+		      default: false
+		    },
+		    required: {
 		      type: [Boolean, String],
 		      fill: true,
 		      required: false,
@@ -12300,7 +12443,7 @@
 	/* 93 */
 	/***/ function(module, exports) {
 
-		module.exports = "<div v-bind:class=\"{&quot;mdl-textfield--floating-label&quot;: floatingLabel, &quot;mdl-textfield--expandable&quot;: expandable, &quot;is-dirty&quot;: isDirty, &quot;is-disabled&quot;: disabled}\" class=\"mdl-textfield mdl-js-textfield\"><slot v-if=\"expandable\" name=\"expandable-button\"><label v-bind:for.once=\"id\" class=\"mdl-button mdl-js-button mdl-button--icon\"><i class=\"material-icons\">{{expandable}}</i></label></slot><div v-bind:class=\"{&quot;mdl-textfield__expandable-holder&quot;: expandable}\"><slot v-if=\"textarea\" name=\"textarea\"><textarea type=\"text\" v-model=\"value\" v-bind:id.once=\"id\" v-bind:rows=\"rows\" class=\"mdl-textfield__input\"></textarea></slot><slot v-else=\"v-else\" name=\"input\"><input v-bind:type=\"type\" v-model=\"value\" v-bind:id.once=\"id\" v-bind:pattern=\"pattern\" v-bind:disabled=\"disabled\" v-bind:readonly=\"readonly\" class=\"mdl-textfield__input\"/></slot><slot name=\"label\"><label v-bind:for.once=\"id\" class=\"mdl-textfield__label\">{{label}}</label></slot><slot name=\"error\"><label v-if=\"error\" class=\"mdl-textfield__error\">{{error}}</label></slot></div></div>";
+		module.exports = "<div v-bind:class=\"{&quot;mdl-textfield--floating-label&quot;: floatingLabel, &quot;mdl-textfield--expandable&quot;: expandable, &quot;is-dirty&quot;: isDirty, &quot;is-disabled&quot;: disabled}\" class=\"mdl-textfield mdl-js-textfield\"><slot v-if=\"expandable\" name=\"expandable-button\"><label v-bind:for.once=\"id\" class=\"mdl-button mdl-js-button mdl-button--icon\"><i class=\"material-icons\">{{expandable}}</i></label></slot><div v-bind:class=\"{&quot;mdl-textfield__expandable-holder&quot;: expandable}\"><slot v-if=\"textarea\" name=\"textarea\"><textarea type=\"text\" v-model=\"value\" v-bind:required=\"required\" v-bind:id.once=\"id\" v-bind:rows=\"rows\" class=\"mdl-textfield__input\"></textarea></slot><slot v-else=\"v-else\" name=\"input\"><input v-bind:type=\"type\" v-model=\"value\" v-bind:id.once=\"id\" v-bind:pattern=\"pattern\" v-bind:disabled=\"disabled\" v-bind:required=\"required\" v-bind:readonly=\"readonly\" class=\"mdl-textfield__input\"/></slot><slot name=\"label\"><label v-bind:for.once=\"id\" class=\"mdl-textfield__label\">{{label}}</label></slot><slot name=\"error\"><label v-if=\"error\" class=\"mdl-textfield__error\">{{error}}</label></slot></div></div>";
 
 	/***/ },
 	/* 94 */
@@ -12322,7 +12465,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/tooltip.vue"
+		  var id = "./tooltip.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12389,7 +12532,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/menu/menu.vue"
+		  var id = "./menu.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12439,7 +12582,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/menu/menu-item.vue"
+		  var id = "./menu-item.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12484,7 +12627,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/card.vue"
+		  var id = "./card.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12607,7 +12750,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/snackbar.vue"
+		  var id = "./snackbar.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -12663,7 +12806,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/select.vue"
+		  var id = "./select.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -13089,7 +13232,7 @@
 		  var hotAPI = require("vue-hot-reload-api")
 		  hotAPI.install(require("vue"), false)
 		  if (!hotAPI.compatible) return
-		  var id = "/Users/posva/vue-mdl/src/dialog.vue"
+		  var id = "./dialog.vue"
 		  if (!module.hot.data) {
 		    hotAPI.createRecord(id, module.exports)
 		  } else {
@@ -13132,7 +13275,7 @@
 		
 		
 		// module
-		exports.push([module.id, "\n.mdl-dialog-container {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-wrap: wrap;\n      -ms-flex-wrap: wrap;\n          flex-wrap: wrap;\n  -webkit-box-pack:center;\n  -webkit-justify-content:center;\n      -ms-flex-pack:center;\n          justify-content:center;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  top:0;\n  left: 0;\n  z-index: 10000;\n  background: rgba(0,0,0,0.3);\n}\n.mdl-dialog-container .mdl-dialog {\n  background-color:white;\n  padding: 1em;\n  color: black;\n  width: initial;\n  min-width: 280px;\n}\n", ""]);
+		exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.mdl-dialog-container {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-wrap: wrap;\n      -ms-flex-wrap: wrap;\n          flex-wrap: wrap;\n  -webkit-box-pack:center;\n  -webkit-justify-content:center;\n      -ms-flex-pack:center;\n          justify-content:center;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  top:0;\n  left: 0;\n  z-index: 10000;\n  background: rgba(0,0,0,0.3);\n}\n.mdl-dialog-container .mdl-dialog {\n  background-color:white;\n  padding: 1em;\n  color: black;\n  width: initial;\n  min-width: 280px;\n}\n", ""]);
 		
 		// exports
 
@@ -13176,15 +13319,6 @@
 		      default: false
 		    }
 		  },
-		  ready: function ready() {
-		    var _this = this;
-		
-		    this.eventsAdded = [];
-		    this.$on(this.displayOn, function () {
-		      _this.show = !_this.show;
-		    });
-		  },
-		
 		  methods: {
 		    open: function open() {
 		      this.show = true;
@@ -15928,52 +16062,2624 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* WEBPACK VAR INJECTION */(function(process) {/*!
+	 * vue-validator v2.1.5
+	 * (c) 2016 kazuya kawaguchi
+	 * Released under the MIT License.
+	 */
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	var babelHelpers = {};
+	babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	  return typeof obj;
+	} : function (obj) {
+	  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+	};
+
+	babelHelpers.classCallCheck = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+
+	babelHelpers.createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];
+	      descriptor.enumerable = descriptor.enumerable || false;
+	      descriptor.configurable = true;
+	      if ("value" in descriptor) descriptor.writable = true;
+	      Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }
+
+	  return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	    if (staticProps) defineProperties(Constructor, staticProps);
+	    return Constructor;
+	  };
+	}();
+
+	babelHelpers.inherits = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	  }
+
+	  subClass.prototype = Object.create(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      enumerable: false,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	};
+
+	babelHelpers.possibleConstructorReturn = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+	};
+
+	babelHelpers;
+	/**
+	 * Utilties
+	 */
+
+	// export default for holding the Vue reference
+	var exports$1 = {};
+	/**
+	 * warn
+	 *
+	 * @param {String} msg
+	 * @param {Error} [err]
+	 *
+	 */
+
+	function warn(msg, err) {
+	  if (window.console) {
+	    console.warn('[vue-validator] ' + msg);
+	    if (err) {
+	      console.warn(err.stack);
+	    }
+	  }
+	}
+
+	/**
+	 * empty
+	 *
+	 * @param {Array|Object} target
+	 * @return {Boolean}
+	 */
+
+	function empty(target) {
+	  if (target === null || target === undefined) {
+	    return true;
+	  }
+
+	  if (Array.isArray(target)) {
+	    if (target.length > 0) {
+	      return false;
+	    }
+	    if (target.length === 0) {
+	      return true;
+	    }
+	  } else if (exports$1.Vue.util.isPlainObject(target)) {
+	    for (var key in target) {
+	      if (exports$1.Vue.util.hasOwn(target, key)) {
+	        return false;
+	      }
+	    }
+	  }
+
+	  return true;
+	}
+
+	/**
+	 * each
+	 *
+	 * @param {Array|Object} target
+	 * @param {Function} iterator
+	 * @param {Object} [context]
+	 */
+
+	function each(target, iterator, context) {
+	  if (Array.isArray(target)) {
+	    for (var i = 0; i < target.length; i++) {
+	      iterator.call(context || target[i], target[i], i);
+	    }
+	  } else if (exports$1.Vue.util.isPlainObject(target)) {
+	    var hasOwn = exports$1.Vue.util.hasOwn;
+	    for (var key in target) {
+	      if (hasOwn(target, key)) {
+	        iterator.call(context || target[key], target[key], key);
+	      }
+	    }
+	  }
+	}
+
+	/**
+	 * pull
+	 *
+	 * @param {Array} arr
+	 * @param {Object} item
+	 * @return {Object|null}
+	 */
+
+	function pull(arr, item) {
+	  var index = exports$1.Vue.util.indexOf(arr, item);
+	  return ~index ? arr.splice(index, 1) : null;
+	}
+
+	/**
+	 * trigger
+	 *
+	 * @param {Element} el
+	 * @param {String} event
+	 * @param {Object} [args]
+	 */
+
+	function trigger(el, event, args) {
+	  var e = document.createEvent('HTMLEvents');
+	  e.initEvent(event, true, false);
+
+	  if (args) {
+	    for (var prop in args) {
+	      e[prop] = args[prop];
+	    }
+	  }
+
+	  // Due to Firefox bug, events fired on disabled
+	  // non-attached form controls can throw errors
+	  try {
+	    el.dispatchEvent(e);
+	  } catch (e) {}
+	}
+
+	/**
+	 * Forgiving check for a promise
+	 *
+	 * @param {Object} p
+	 * @return {Boolean}
+	 */
+
+	function isPromise(p) {
+	  return p && typeof p.then === 'function';
+	}
+
+	/**
+	 * Togging classes
+	 *
+	 * @param {Element} el
+	 * @param {String} key
+	 * @param {Function} fn
+	 */
+
+	function toggleClasses(el, key, fn) {
+	  key = key.trim();
+	  if (key.indexOf(' ') === -1) {
+	    fn(el, key);
+	    return;
+	  }
+
+	  var keys = key.split(/\s+/);
+	  for (var i = 0, l = keys.length; i < l; i++) {
+	    fn(el, keys[i]);
+	  }
+	}
+
+	/**
+	 * Fundamental validate functions
+	 */
+
+	/**
+	 * required
+	 *
+	 * This function validate whether the value has been filled out.
+	 *
+	 * @param {*} val
+	 * @return {Boolean}
+	 */
+
+	function required(val) {
+	  if (Array.isArray(val)) {
+	    if (val.length !== 0) {
+	      var valid = true;
+	      for (var i = 0, l = val.length; i < l; i++) {
+	        valid = required(val[i]);
+	        if (!valid) {
+	          break;
+	        }
+	      }
+	      return valid;
+	    } else {
+	      return false;
+	    }
+	  } else if (typeof val === 'number' || typeof val === 'function') {
+	    return true;
+	  } else if (typeof val === 'boolean') {
+	    return val;
+	  } else if (typeof val === 'string') {
+	    return val.length > 0;
+	  } else if (val !== null && (typeof val === 'undefined' ? 'undefined' : babelHelpers.typeof(val)) === 'object') {
+	    return Object.keys(val).length > 0;
+	  } else if (val === null || val === undefined) {
+	    return false;
+	  }
+	}
+
+	/**
+	 * pattern
+	 *
+	 * This function validate whether the value matches the regex pattern
+	 *
+	 * @param val
+	 * @param {String} pat
+	 * @return {Boolean}
+	 */
+
+	function pattern(val, pat) {
+	  if (typeof pat !== 'string') {
+	    return false;
+	  }
+
+	  var match = pat.match(new RegExp('^/(.*?)/([gimy]*)$'));
+	  if (!match) {
+	    return false;
+	  }
+
+	  return new RegExp(match[1], match[2]).test(val);
+	}
+
+	/**
+	 * minlength
+	 *
+	 * This function validate whether the minimum length.
+	 *
+	 * @param {String|Array} val
+	 * @param {String|Number} min
+	 * @return {Boolean}
+	 */
+
+	function minlength(val, min) {
+	  if (typeof val === 'string') {
+	    return isInteger(min, 10) && val.length >= parseInt(min, 10);
+	  } else if (Array.isArray(val)) {
+	    return val.length >= parseInt(min, 10);
+	  } else {
+	    return false;
+	  }
+	}
+
+	/**
+	 * maxlength
+	 *
+	 * This function validate whether the maximum length.
+	 *
+	 * @param {String|Array} val
+	 * @param {String|Number} max
+	 * @return {Boolean}
+	 */
+
+	function maxlength(val, max) {
+	  if (typeof val === 'string') {
+	    return isInteger(max, 10) && val.length <= parseInt(max, 10);
+	  } else if (Array.isArray(val)) {
+	    return val.length <= parseInt(max, 10);
+	  } else {
+	    return false;
+	  }
+	}
+
+	/**
+	 * min
+	 *
+	 * This function validate whether the minimum value of the numberable value.
+	 *
+	 * @param {*} val
+	 * @param {*} arg minimum
+	 * @return {Boolean}
+	 */
+
+	function min(val, arg) {
+	  return !isNaN(+val) && !isNaN(+arg) && +val >= +arg;
+	}
+
+	/**
+	 * max
+	 *
+	 * This function validate whether the maximum value of the numberable value.
+	 *
+	 * @param {*} val
+	 * @param {*} arg maximum
+	 * @return {Boolean}
+	 */
+
+	function max(val, arg) {
+	  return !isNaN(+val) && !isNaN(+arg) && +val <= +arg;
+	}
+
+	/**
+	 * isInteger
+	 *
+	 * This function check whether the value of the string is integer.
+	 *
+	 * @param {String} val
+	 * @return {Boolean}
+	 * @private
+	 */
+
+	function isInteger(val) {
+	  return (/^(-?[1-9]\d*|0)$/.test(val)
+	  );
+	}
+
+	var validators = Object.freeze({
+	  required: required,
+	  pattern: pattern,
+	  minlength: minlength,
+	  maxlength: maxlength,
+	  min: min,
+	  max: max
 	});
 
-	var _vue = __webpack_require__(1);
+	function Asset (Vue) {
+	  var extend = Vue.util.extend;
 
-	var _vue2 = _interopRequireDefault(_vue);
+	  // set global validators asset
+	  var assets = Object.create(null);
+	  extend(assets, validators);
+	  Vue.options.validators = assets;
 
-	var _user = __webpack_require__(6);
+	  // set option merge strategy
+	  var strats = Vue.config.optionMergeStrategies;
+	  if (strats) {
+	    strats.validators = function (parent, child) {
+	      if (!child) {
+	        return parent;
+	      }
+	      if (!parent) {
+	        return child;
+	      }
+	      var ret = Object.create(null);
+	      extend(ret, parent);
+	      for (var key in child) {
+	        ret[key] = child[key];
+	      }
+	      return ret;
+	    };
+	  }
 
-	var _user2 = _interopRequireDefault(_user);
+	  /**
+	   * Register or retrieve a global validator definition.
+	   *
+	   * @param {String} id
+	   * @param {Function} definition
+	   */
 
-	var _home = __webpack_require__(14);
+	  Vue.validator = function (id, definition) {
+	    if (!definition) {
+	      return Vue.options['validators'][id];
+	    } else {
+	      Vue.options['validators'][id] = definition;
+	    }
+	  };
+	}
 
-	var _home2 = _interopRequireDefault(_home);
+	function Override (Vue) {
+	  // override _init
+	  var init = Vue.prototype._init;
+	  Vue.prototype._init = function (options) {
+	    if (!this._validatorMaps) {
+	      this._validatorMaps = Object.create(null);
+	    }
+	    init.call(this, options);
+	  };
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	  // override _destroy
+	  var destroy = Vue.prototype._destroy;
+	  Vue.prototype._destroy = function () {
+	    destroy.apply(this, arguments);
+	    this._validatorMaps = null;
+	  };
+	}
 
-	var HomeComponent = _vue2.default.extend({
-	  template: _home2.default,
-	  route: {
-	    data: function data() {
+	var VALIDATE_UPDATE = '__vue-validator-validate-update__';
+	var PRIORITY_VALIDATE = 16;
+	var PRIORITY_VALIDATE_CLASS = 32;
+	var REGEX_FILTER = /[^|]\|[^|]/;
+	var REGEX_VALIDATE_DIRECTIVE = /^v-validate(?:$|:(.*)$)/;
+	var REGEX_EVENT = /^v-on:|^@/;
+
+	var classId = 0; // ID for validation class
+
+	function ValidateClass (Vue) {
+	  var vIf = Vue.directive('if');
+	  var FragmentFactory = Vue.FragmentFactory;
+	  var _Vue$util = Vue.util;
+	  var toArray = _Vue$util.toArray;
+	  var replace = _Vue$util.replace;
+	  var createAnchor = _Vue$util.createAnchor;
+
+	  /**
+	   * `v-validate-class` directive
+	   */
+
+	  Vue.directive('validate-class', {
+	    terminal: true,
+	    priority: vIf.priority + PRIORITY_VALIDATE_CLASS,
+
+	    bind: function bind() {
 	      var _this = this;
 
-	      _user2.default.checkLoggedIn(function (user) {
-	        if (user) {
-	          _this.$route.router.go({ name: 'exams' });
+	      var id = String(classId++);
+	      this.setClassIds(this.el, id);
+
+	      this.vm.$on(VALIDATE_UPDATE, this.cb = function (classIds, validation, results) {
+	        if (classIds.indexOf(id) > -1) {
+	          validation.updateClasses(results, _this.frag.node);
+	        }
+	      });
+
+	      this.setupFragment();
+	    },
+	    unbind: function unbind() {
+	      this.vm.$off(VALIDATE_UPDATE, this.cb);
+	      this.teardownFragment();
+	    },
+	    setClassIds: function setClassIds(el, id) {
+	      var childNodes = toArray(el.childNodes);
+	      for (var i = 0, l = childNodes.length; i < l; i++) {
+	        var element = childNodes[i];
+	        if (element.nodeType === 1) {
+	          var hasAttrs = element.hasAttributes();
+	          var attrs = hasAttrs && toArray(element.attributes);
+	          for (var k = 0, _l = attrs.length; k < _l; k++) {
+	            var attr = attrs[k];
+	            if (attr.name.match(REGEX_VALIDATE_DIRECTIVE)) {
+	              var existingId = element.getAttribute(VALIDATE_UPDATE);
+	              var value = existingId ? existingId + ',' + id : id;
+	              element.setAttribute(VALIDATE_UPDATE, value);
+	            }
+	          }
+	        }
+
+	        if (element.hasChildNodes()) {
+	          this.setClassIds(element, id);
+	        }
+	      }
+	    },
+	    setupFragment: function setupFragment() {
+	      this.anchor = createAnchor('v-validate-class');
+	      replace(this.el, this.anchor);
+
+	      this.factory = new FragmentFactory(this.vm, this.el);
+	      this.frag = this.factory.create(this._host, this._scope, this._frag);
+	      this.frag.before(this.anchor);
+	    },
+	    teardownFragment: function teardownFragment() {
+	      if (this.frag) {
+	        this.frag.remove();
+	        this.frag = null;
+	        this.factory = null;
+	      }
+
+	      replace(this.anchor, this.el);
+	      this.anchor = null;
+	    }
+	  });
+	}
+
+	function Validate (Vue) {
+	  var vIf = Vue.directive('if');
+	  var FragmentFactory = Vue.FragmentFactory;
+	  var parseDirective = Vue.parsers.directive.parseDirective;
+	  var _Vue$util = Vue.util;
+	  var inBrowser = _Vue$util.inBrowser;
+	  var bind = _Vue$util.bind;
+	  var on = _Vue$util.on;
+	  var off = _Vue$util.off;
+	  var createAnchor = _Vue$util.createAnchor;
+	  var replace = _Vue$util.replace;
+	  var camelize = _Vue$util.camelize;
+	  var isPlainObject = _Vue$util.isPlainObject;
+
+	  // Test for IE10/11 textarea placeholder clone bug
+
+	  function checkTextareaCloneBug() {
+	    if (inBrowser) {
+	      var t = document.createElement('textarea');
+	      t.placeholder = 't';
+	      return t.cloneNode(true).value === 't';
+	    } else {
+	      return false;
+	    }
+	  }
+	  var hasTextareaCloneBug = checkTextareaCloneBug();
+
+	  /**
+	   * `v-validate` directive
+	   */
+
+	  Vue.directive('validate', {
+	    deep: true,
+	    terminal: true,
+	    priority: vIf.priority + PRIORITY_VALIDATE,
+	    params: ['group', 'field', 'detect-blur', 'detect-change', 'initial', 'classes'],
+
+	    paramWatchers: {
+	      detectBlur: function detectBlur(val, old) {
+	        if (this._invalid) {
+	          return;
+	        }
+	        this.validation.detectBlur = this.isDetectBlur(val);
+	        this.validator.validate(this.field);
+	      },
+	      detectChange: function detectChange(val, old) {
+	        if (this._invalid) {
+	          return;
+	        }
+	        this.validation.detectChange = this.isDetectChange(val);
+	        this.validator.validate(this.field);
+	      }
+	    },
+
+	    bind: function bind() {
+	      var el = this.el;
+
+	      if (process.env.NODE_ENV !== 'production' && el.__vue__) {
+	        warn('v-validate="' + this.expression + '" cannot be used on an instance root element.');
+	        this._invalid = true;
+	        return;
+	      }
+
+	      if (process.env.NODE_ENV !== 'production' && (el.hasAttribute('v-if') || el.hasAttribute('v-for'))) {
+	        warn('v-validate cannot be used `v-if` or `v-for` build-in terminal directive ' + 'on an element. these is wrapped with `<template>` or other tags: ' + '(e.g. <validator name="validator">' + '<template v-if="hidden">' + '<input type="text" v-validate:field1="[\'required\']">' + '</template>' + '</validator>).');
+	        this._invalid = true;
+	        return;
+	      }
+
+	      if (process.env.NODE_ENV !== 'production' && !(this.arg || this.params.field)) {
+	        warn('you need specify field name for v-validate directive.');
+	        this._invalid = true;
+	        return;
+	      }
+
+	      var validatorName = this.vm.$options._validator;
+	      if (process.env.NODE_ENV !== 'production' && !validatorName) {
+	        warn('you need to wrap the elements to be validated in a <validator> element: ' + '(e.g. <validator name="validator">' + '<input type="text" v-validate:field1="[\'required\']">' + '</validator>).');
+	        this._invalid = true;
+	        return;
+	      }
+
+	      var raw = el.getAttribute('v-model');
+
+	      var _parseModelRaw = this.parseModelRaw(raw);
+
+	      var model = _parseModelRaw.model;
+	      var filters = _parseModelRaw.filters;
+
+	      this.model = model;
+
+	      this.setupFragment();
+	      this.setupValidate(validatorName, model, filters);
+	      this.listen();
+	    },
+	    update: function update(value, old) {
+	      if (!value || this._invalid) {
+	        return;
+	      }
+
+	      if (isPlainObject(value) || old && isPlainObject(old)) {
+	        this.handleObject(value, old);
+	      } else if (Array.isArray(value) || old && Array.isArray(old)) {
+	        this.handleArray(value, old);
+	      }
+
+	      var options = { field: this.field, noopable: this._initialNoopValidation };
+	      if (this.frag) {
+	        options.el = this.frag.node;
+	      }
+	      this.validator.validate(options);
+
+	      if (this._initialNoopValidation) {
+	        this._initialNoopValidation = null;
+	      }
+	    },
+	    unbind: function unbind() {
+	      if (this._invalid) {
+	        return;
+	      }
+
+	      this.unlisten();
+	      this.teardownValidate();
+	      this.teardownFragment();
+
+	      this.model = null;
+	    },
+	    parseModelRaw: function parseModelRaw(raw) {
+	      if (REGEX_FILTER.test(raw)) {
+	        var parsed = parseDirective(raw);
+	        return { model: parsed.expression, filters: parsed.filters };
+	      } else {
+	        return { model: raw };
+	      }
+	    },
+	    setupValidate: function setupValidate(name, model, filters) {
+	      var params = this.params;
+	      var validator = this.validator = this.vm._validatorMaps[name];
+
+	      this.field = camelize(this.arg ? this.arg : params.field);
+
+	      this.validation = validator.manageValidation(this.field, model, this.vm, this.getElementFrom(this.frag), this._scope, filters, params.initial, this.isDetectBlur(params.detectBlur), this.isDetectChange(params.detectChange));
+
+	      isPlainObject(params.classes) && this.validation.setValidationClasses(params.classes);
+
+	      params.group && validator.addGroupValidation(params.group, this.field);
+
+	      this._initialNoopValidation = this.isInitialNoopValidation(params.initial);
+	    },
+	    listen: function listen() {
+	      var model = this.model;
+	      var validation = this.validation;
+	      var el = this.getElementFrom(this.frag);
+
+	      this.onBlur = bind(validation.listener, validation);
+	      on(el, 'blur', this.onBlur);
+	      if ((el.type === 'radio' || el.tagName === 'SELECT') && !model) {
+	        this.onChange = bind(validation.listener, validation);
+	        on(el, 'change', this.onChange);
+	      } else if (el.type === 'checkbox') {
+	        if (!model) {
+	          this.onChange = bind(validation.listener, validation);
+	          on(el, 'change', this.onChange);
+	        } else {
+	          this.onClick = bind(validation.listener, validation);
+	          on(el, 'click', this.onClick);
+	        }
+	      } else {
+	        if (!model) {
+	          this.onInput = bind(validation.listener, validation);
+	          on(el, 'input', this.onInput);
+	        }
+	      }
+	    },
+	    unlisten: function unlisten() {
+	      var el = this.getElementFrom(this.frag);
+
+	      if (this.onInput) {
+	        off(el, 'input', this.onInput);
+	        this.onInput = null;
+	      }
+
+	      if (this.onClick) {
+	        off(el, 'click', this.onClick);
+	        this.onClick = null;
+	      }
+
+	      if (this.onChange) {
+	        off(el, 'change', this.onChange);
+	        this.onChange = null;
+	      }
+
+	      if (this.onBlur) {
+	        off(el, 'blur', this.onBlur);
+	        this.onBlur = null;
+	      }
+	    },
+	    teardownValidate: function teardownValidate() {
+	      if (this.validator && this.validation) {
+	        var el = this.getElementFrom(this.frag);
+
+	        this.params.group && this.validator.removeGroupValidation(this.params.group, this.field);
+
+	        this.validator.unmanageValidation(this.field, el);
+
+	        this.validator = null;
+	        this.validation = null;
+	        this.field = null;
+	      }
+	    },
+	    setupFragment: function setupFragment() {
+	      this.anchor = createAnchor('v-validate');
+	      replace(this.el, this.anchor);
+
+	      this.factory = new FragmentFactory(this.vm, this.shimNode(this.el));
+	      this.frag = this.factory.create(this._host, this._scope, this._frag);
+	      this.frag.before(this.anchor);
+	    },
+	    teardownFragment: function teardownFragment() {
+	      if (this.frag) {
+	        this.frag.remove();
+	        this.frag = null;
+	        this.factory = null;
+	      }
+
+	      replace(this.anchor, this.el);
+	      this.anchor = null;
+	    },
+	    handleArray: function handleArray(value, old) {
+	      var _this = this;
+
+	      old && this.validation.resetValidation();
+
+	      each(value, function (val) {
+	        _this.validation.setValidation(val);
+	      });
+	    },
+	    handleObject: function handleObject(value, old) {
+	      var _this2 = this;
+
+	      old && this.validation.resetValidation();
+
+	      each(value, function (val, key) {
+	        if (isPlainObject(val)) {
+	          if ('rule' in val) {
+	            var msg = 'message' in val ? val.message : null;
+	            var initial = 'initial' in val ? val.initial : null;
+	            _this2.validation.setValidation(key, val.rule, msg, initial);
+	          }
+	        } else {
+	          _this2.validation.setValidation(key, val);
+	        }
+	      });
+	    },
+	    isDetectBlur: function isDetectBlur(detectBlur) {
+	      return detectBlur === undefined || detectBlur === 'on' || detectBlur === true;
+	    },
+	    isDetectChange: function isDetectChange(detectChange) {
+	      return detectChange === undefined || detectChange === 'on' || detectChange === true;
+	    },
+	    isInitialNoopValidation: function isInitialNoopValidation(initial) {
+	      return initial === 'off' || initial === false;
+	    },
+	    shimNode: function shimNode(node) {
+	      var ret = node;
+	      if (hasTextareaCloneBug) {
+	        if (node.tagName === 'TEXTAREA') {
+	          ret = node.cloneNode(true);
+	          ret.value = node.value;
+	          var i = ret.childNodes.length;
+	          while (i--) {
+	            ret.removeChild(ret.childNodes[i]);
+	          }
+	        }
+	      }
+	      return ret;
+	    },
+	    getElementFrom: function getElementFrom(frag) {
+	      return frag.single ? frag.node : frag.node.nextSibling;
+	    }
+	  });
+	}
+
+	/**
+	 * BaseValidation class
+	 */
+
+	var BaseValidation = function () {
+	  function BaseValidation(field, model, vm, el, scope, validator, filters, detectBlur, detectChange) {
+	    babelHelpers.classCallCheck(this, BaseValidation);
+
+	    this.field = field;
+	    this.touched = false;
+	    this.dirty = false;
+	    this.modified = false;
+
+	    this._modified = false;
+	    this._model = model;
+	    this._filters = filters;
+	    this._validator = validator;
+	    this._vm = vm;
+	    this._el = el;
+	    this._forScope = scope;
+	    this._init = this._getValue(el);
+	    this._validators = {};
+	    this._detectBlur = detectBlur;
+	    this._detectChange = detectChange;
+	    this._classes = {};
+	  }
+
+	  BaseValidation.prototype.manageElement = function manageElement(el, initial) {
+	    var _this = this;
+
+	    var scope = this._getScope();
+	    var model = this._model;
+
+	    this._initial = initial;
+
+	    var classIds = el.getAttribute(VALIDATE_UPDATE);
+	    if (classIds) {
+	      el.removeAttribute(VALIDATE_UPDATE);
+	      this._classIds = classIds.split(',');
+	    }
+
+	    if (model) {
+	      el.value = this._evalModel(model, this._filters);
+	      this._unwatch = scope.$watch(model, function (val, old) {
+	        if (val !== old) {
+	          if (_this.guardValidate(el, 'input')) {
+	            return;
+	          }
+
+	          _this.handleValidate(el, { noopable: _this._initial });
+	          if (_this._initial) {
+	            _this._initial = null;
+	          }
+	        }
+	      }, { deep: true });
+	    }
+	  };
+
+	  BaseValidation.prototype.unmanageElement = function unmanageElement(el) {
+	    this._unwatch && this._unwatch();
+	  };
+
+	  BaseValidation.prototype.resetValidation = function resetValidation() {
+	    var _this2 = this;
+
+	    var keys = Object.keys(this._validators);
+	    each(keys, function (key, index) {
+	      _this2._validators[key] = null;
+	      delete _this2._validators[key];
+	    });
+	  };
+
+	  BaseValidation.prototype.setValidation = function setValidation(name, arg, msg, initial) {
+	    var validator = this._validators[name];
+	    if (!validator) {
+	      validator = this._validators[name] = {};
+	      validator.name = name;
+	    }
+
+	    validator.arg = arg;
+	    if (msg) {
+	      validator.msg = msg;
+	    }
+
+	    if (initial) {
+	      validator.initial = initial;
+	      validator._isNoopable = true;
+	    }
+	  };
+
+	  BaseValidation.prototype.setValidationClasses = function setValidationClasses(classes) {
+	    var _this3 = this;
+
+	    each(classes, function (value, key) {
+	      _this3._classes[key] = value;
+	    });
+	  };
+
+	  BaseValidation.prototype.willUpdateFlags = function willUpdateFlags() {
+	    var touched = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+	    touched && this.willUpdateTouched(this._el, 'blur');
+	    this.willUpdateDirty(this._el);
+	    this.willUpdateModified(this._el);
+	  };
+
+	  BaseValidation.prototype.willUpdateTouched = function willUpdateTouched(el, type) {
+	    if (type && type === 'blur') {
+	      this.touched = true;
+	      this._fireEvent(el, 'touched');
+	    }
+	  };
+
+	  BaseValidation.prototype.willUpdateDirty = function willUpdateDirty(el) {
+	    if (!this.dirty && this._checkModified(el)) {
+	      this.dirty = true;
+	      this._fireEvent(el, 'dirty');
+	    }
+	  };
+
+	  BaseValidation.prototype.willUpdateModified = function willUpdateModified(el) {
+	    this.modified = this._checkModified(el);
+	    if (this._modified !== this.modified) {
+	      this._fireEvent(el, 'modified', { modified: this.modified });
+	      this._modified = this.modified;
+	    }
+	  };
+
+	  BaseValidation.prototype.listener = function listener(e) {
+	    if (this.guardValidate(e.target, e.type)) {
+	      return;
+	    }
+
+	    this.handleValidate(e.target, { type: e.type });
+	  };
+
+	  BaseValidation.prototype.handleValidate = function handleValidate(el) {
+	    var _ref = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	    var _ref$type = _ref.type;
+	    var type = _ref$type === undefined ? null : _ref$type;
+	    var _ref$noopable = _ref.noopable;
+	    var noopable = _ref$noopable === undefined ? false : _ref$noopable;
+
+	    this.willUpdateTouched(el, type);
+	    this.willUpdateDirty(el);
+	    this.willUpdateModified(el);
+
+	    this._validator.validate({ field: this.field, el: el, noopable: noopable });
+	  };
+
+	  BaseValidation.prototype.validate = function validate(cb) {
+	    var _this4 = this;
+
+	    var noopable = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    var el = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+	    var _ = exports$1.Vue.util;
+
+	    var results = {};
+	    var errors = [];
+	    var valid = true;
+
+	    this._runValidators(function (descriptor, name, done) {
+	      var asset = _this4._resolveValidator(name);
+	      var validator = null;
+	      var msg = null;
+
+	      if (_.isPlainObject(asset)) {
+	        if (asset.check && typeof asset.check === 'function') {
+	          validator = asset.check;
+	        }
+	        if (asset.message) {
+	          msg = asset.message;
+	        }
+	      } else if (typeof asset === 'function') {
+	        validator = asset;
+	      }
+
+	      if (descriptor.msg) {
+	        msg = descriptor.msg;
+	      }
+
+	      if (noopable) {
+	        results[name] = false;
+	        return done();
+	      }
+
+	      if (descriptor._isNoopable) {
+	        results[name] = false;
+	        descriptor._isNoopable = null;
+	        return done();
+	      }
+
+	      if (validator) {
+	        var value = _this4._getValue(_this4._el);
+	        _this4._invokeValidator(_this4._vm, validator, value, descriptor.arg, function (ret, err) {
+	          if (!ret) {
+	            valid = false;
+	            if (err) {
+	              // async error message
+	              errors.push({ validator: name, message: err });
+	              results[name] = err;
+	            } else if (msg) {
+	              var error = { validator: name };
+	              error.message = typeof msg === 'function' ? msg.call(_this4._vm, _this4.field, descriptor.arg) : msg;
+	              errors.push(error);
+	              results[name] = error.message;
+	            } else {
+	              results[name] = !ret;
+	            }
+	          } else {
+	            results[name] = !ret;
+	          }
+
+	          done();
+	        });
+	      } else {
+	        done();
+	      }
+	    }, function () {
+	      // finished
+	      _this4._fireEvent(_this4._el, valid ? 'valid' : 'invalid');
+
+	      var props = {
+	        valid: valid,
+	        invalid: !valid,
+	        touched: _this4.touched,
+	        untouched: !_this4.touched,
+	        dirty: _this4.dirty,
+	        pristine: !_this4.dirty,
+	        modified: _this4.modified
+	      };
+	      if (!empty(errors)) {
+	        props.errors = errors;
+	      }
+	      _.extend(results, props);
+
+	      _this4.willUpdateClasses(results, el);
+
+	      cb(results);
+	    });
+	  };
+
+	  BaseValidation.prototype.resetFlags = function resetFlags() {
+	    this.touched = false;
+	    this.dirty = false;
+	    this.modified = false;
+	    this._modified = false;
+	  };
+
+	  BaseValidation.prototype.reset = function reset() {
+	    each(this._validators, function (descriptor, key) {
+	      if (descriptor.initial && !descriptor._isNoopable) {
+	        descriptor._isNoopable = true;
+	      }
+	    });
+	    this.resetFlags();
+	    this._init = this._getValue(this._el);
+	  };
+
+	  BaseValidation.prototype.willUpdateClasses = function willUpdateClasses(results) {
+	    var _this5 = this;
+
+	    var el = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+	    if (this._checkClassIds(el)) {
+	      (function () {
+	        var classIds = _this5._getClassIds(el);
+	        _this5.vm.$nextTick(function () {
+	          _this5.vm.$emit(VALIDATE_UPDATE, classIds, _this5, results);
+	        });
+	      })();
+	    } else {
+	      this.updateClasses(results);
+	    }
+	  };
+
+	  BaseValidation.prototype.updateClasses = function updateClasses(results) {
+	    var el = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+	    this._updateClasses(el || this._el, results);
+	  };
+
+	  BaseValidation.prototype.guardValidate = function guardValidate(el, type) {
+	    if (type && type === 'blur' && !this.detectBlur) {
+	      return true;
+	    }
+
+	    if (type && type === 'input' && !this.detectChange) {
+	      return true;
+	    }
+
+	    if (type && type === 'change' && !this.detectChange) {
+	      return true;
+	    }
+
+	    if (type && type === 'click' && !this.detectChange) {
+	      return true;
+	    }
+
+	    return false;
+	  };
+
+	  BaseValidation.prototype._getValue = function _getValue(el) {
+	    return el.value;
+	  };
+
+	  BaseValidation.prototype._getScope = function _getScope() {
+	    return this._forScope || this._vm;
+	  };
+
+	  BaseValidation.prototype._getClassIds = function _getClassIds(el) {
+	    return this._classIds;
+	  };
+
+	  BaseValidation.prototype._checkModified = function _checkModified(target) {
+	    return this._init !== this._getValue(target);
+	  };
+
+	  BaseValidation.prototype._checkClassIds = function _checkClassIds(el) {
+	    return this._getClassIds(el);
+	  };
+
+	  BaseValidation.prototype._fireEvent = function _fireEvent(el, type, args) {
+	    trigger(el, type, args);
+	  };
+
+	  BaseValidation.prototype._evalModel = function _evalModel(model, filters) {
+	    var scope = this._getScope();
+
+	    var val = null;
+	    if (filters) {
+	      val = scope.$get(model);
+	      return filters ? this._applyFilters(val, null, filters) : val;
+	    } else {
+	      val = scope.$get(model);
+	      return val === undefined || val === null ? '' : val;
+	    }
+	  };
+
+	  BaseValidation.prototype._updateClasses = function _updateClasses(el, results) {
+	    this._toggleValid(el, results.valid);
+	    this._toggleTouched(el, results.touched);
+	    this._togglePristine(el, results.pristine);
+	    this._toggleModfied(el, results.modified);
+	  };
+
+	  BaseValidation.prototype._toggleValid = function _toggleValid(el, valid) {
+	    var _util$Vue$util = exports$1.Vue.util;
+	    var addClass = _util$Vue$util.addClass;
+	    var removeClass = _util$Vue$util.removeClass;
+
+	    var validClass = this._classes.valid || 'valid';
+	    var invalidClass = this._classes.invalid || 'invalid';
+
+	    if (valid) {
+	      toggleClasses(el, validClass, addClass);
+	      toggleClasses(el, invalidClass, removeClass);
+	    } else {
+	      toggleClasses(el, validClass, removeClass);
+	      toggleClasses(el, invalidClass, addClass);
+	    }
+	  };
+
+	  BaseValidation.prototype._toggleTouched = function _toggleTouched(el, touched) {
+	    var _util$Vue$util2 = exports$1.Vue.util;
+	    var addClass = _util$Vue$util2.addClass;
+	    var removeClass = _util$Vue$util2.removeClass;
+
+	    var touchedClass = this._classes.touched || 'touched';
+	    var untouchedClass = this._classes.untouched || 'untouched';
+
+	    if (touched) {
+	      toggleClasses(el, touchedClass, addClass);
+	      toggleClasses(el, untouchedClass, removeClass);
+	    } else {
+	      toggleClasses(el, touchedClass, removeClass);
+	      toggleClasses(el, untouchedClass, addClass);
+	    }
+	  };
+
+	  BaseValidation.prototype._togglePristine = function _togglePristine(el, pristine) {
+	    var _util$Vue$util3 = exports$1.Vue.util;
+	    var addClass = _util$Vue$util3.addClass;
+	    var removeClass = _util$Vue$util3.removeClass;
+
+	    var pristineClass = this._classes.pristine || 'pristine';
+	    var dirtyClass = this._classes.dirty || 'dirty';
+
+	    if (pristine) {
+	      toggleClasses(el, pristineClass, addClass);
+	      toggleClasses(el, dirtyClass, removeClass);
+	    } else {
+	      toggleClasses(el, pristineClass, removeClass);
+	      toggleClasses(el, dirtyClass, addClass);
+	    }
+	  };
+
+	  BaseValidation.prototype._toggleModfied = function _toggleModfied(el, modified) {
+	    var _util$Vue$util4 = exports$1.Vue.util;
+	    var addClass = _util$Vue$util4.addClass;
+	    var removeClass = _util$Vue$util4.removeClass;
+
+	    var modifiedClass = this._classes.modified || 'modified';
+
+	    if (modified) {
+	      toggleClasses(el, modifiedClass, addClass);
+	    } else {
+	      toggleClasses(el, modifiedClass, removeClass);
+	    }
+	  };
+
+	  BaseValidation.prototype._applyFilters = function _applyFilters(value, oldValue, filters, write) {
+	    var resolveAsset = exports$1.Vue.util.resolveAsset;
+	    var scope = this._getScope();
+
+	    var filter = void 0,
+	        fn = void 0,
+	        args = void 0,
+	        arg = void 0,
+	        offset = void 0,
+	        i = void 0,
+	        l = void 0,
+	        j = void 0,
+	        k = void 0;
+	    for (i = 0, l = filters.length; i < l; i++) {
+	      filter = filters[i];
+	      fn = resolveAsset(this._vm.$options, 'filters', filter.name);
+	      if (!fn) {
+	        continue;
+	      }
+
+	      fn = write ? fn.write : fn.read || fn;
+	      if (typeof fn !== 'function') {
+	        continue;
+	      }
+
+	      args = write ? [value, oldValue] : [value];
+	      offset = write ? 2 : 1;
+	      if (filter.args) {
+	        for (j = 0, k = filter.args.length; j < k; j++) {
+	          arg = filter.args[j];
+	          args[j + offset] = arg.dynamic ? scope.$get(arg.value) : arg.value;
+	        }
+	      }
+
+	      value = fn.apply(this._vm, args);
+	    }
+
+	    return value;
+	  };
+
+	  BaseValidation.prototype._runValidators = function _runValidators(fn, cb) {
+	    var validators = this._validators;
+	    var length = Object.keys(validators).length;
+
+	    var count = 0;
+	    each(validators, function (descriptor, name) {
+	      fn(descriptor, name, function () {
+	        ++count;
+	        count >= length && cb();
+	      });
+	    });
+	  };
+
+	  BaseValidation.prototype._invokeValidator = function _invokeValidator(vm, validator, val, arg, cb) {
+	    var future = validator.call(this, val, arg);
+	    if (typeof future === 'function') {
+	      // function
+	      future(function () {
+	        // resolve
+	        cb(true);
+	      }, function (msg) {
+	        // reject
+	        cb(false, msg);
+	      });
+	    } else if (isPromise(future)) {
+	      // promise
+	      future.then(function () {
+	        // resolve
+	        cb(true);
+	      }, function (msg) {
+	        // reject
+	        cb(false, msg);
+	      }).catch(function (err) {
+	        cb(false, err.message);
+	      });
+	    } else {
+	      // sync
+	      cb(future);
+	    }
+	  };
+
+	  BaseValidation.prototype._resolveValidator = function _resolveValidator(name) {
+	    var resolveAsset = exports$1.Vue.util.resolveAsset;
+	    return resolveAsset(this._vm.$options, 'validators', name);
+	  };
+
+	  babelHelpers.createClass(BaseValidation, [{
+	    key: 'vm',
+	    get: function get() {
+	      return this._vm;
+	    }
+	  }, {
+	    key: 'el',
+	    get: function get() {
+	      return this._el;
+	    }
+	  }, {
+	    key: 'detectChange',
+	    get: function get() {
+	      return this._detectChange;
+	    },
+	    set: function set(val) {
+	      this._detectChange = val;
+	    }
+	  }, {
+	    key: 'detectBlur',
+	    get: function get() {
+	      return this._detectBlur;
+	    },
+	    set: function set(val) {
+	      this._detectBlur = val;
+	    }
+	  }]);
+	  return BaseValidation;
+	}();
+
+	/**
+	 * CheckboxValidation class
+	 */
+
+	var CheckboxValidation = function (_BaseValidation) {
+	  babelHelpers.inherits(CheckboxValidation, _BaseValidation);
+
+	  function CheckboxValidation(field, model, vm, el, scope, validator, filters, detectBlur, detectChange) {
+	    babelHelpers.classCallCheck(this, CheckboxValidation);
+
+	    var _this = babelHelpers.possibleConstructorReturn(this, _BaseValidation.call(this, field, model, vm, el, scope, validator, filters, detectBlur, detectChange));
+
+	    _this._inits = [];
+	    return _this;
+	  }
+
+	  CheckboxValidation.prototype.manageElement = function manageElement(el, initial) {
+	    var _this2 = this;
+
+	    var scope = this._getScope();
+	    var item = this._addItem(el, initial);
+
+	    var model = item.model = this._model;
+	    if (model) {
+	      var value = this._evalModel(model, this._filters);
+	      if (Array.isArray(value)) {
+	        this._setChecked(value, item.el);
+	        item.unwatch = scope.$watch(model, function (val, old) {
+	          if (val !== old) {
+	            if (_this2.guardValidate(item.el, 'change')) {
+	              return;
+	            }
+
+	            _this2.handleValidate(item.el, { noopable: item.initial });
+	            if (item.initial) {
+	              item.initial = null;
+	            }
+	          }
+	        });
+	      } else {
+	        el.checked = value || false;
+	        this._init = el.checked;
+	        item.init = el.checked;
+	        item.value = el.value;
+	        item.unwatch = scope.$watch(model, function (val, old) {
+	          if (val !== old) {
+	            if (_this2.guardValidate(el, 'change')) {
+	              return;
+	            }
+
+	            _this2.handleValidate(el, { noopable: item.initial });
+	            if (item.initial) {
+	              item.initial = null;
+	            }
+	          }
+	        });
+	      }
+	    } else {
+	      var options = { field: this.field, noopable: initial };
+	      if (this._checkClassIds(el)) {
+	        options.el = el;
+	      }
+	      this._validator.validate(options);
+	    }
+	  };
+
+	  CheckboxValidation.prototype.unmanageElement = function unmanageElement(el) {
+	    var found = -1;
+	    each(this._inits, function (item, index) {
+	      if (item.el === el) {
+	        found = index;
+	        if (item.unwatch && item.model) {
+	          item.unwatch();
+	          item.unwatch = null;
+	          item.model = null;
+	        }
+	      }
+	    });
+	    if (found === -1) {
+	      return;
+	    }
+
+	    this._inits.splice(found, 1);
+	    this._validator.validate({ field: this.field });
+	  };
+
+	  CheckboxValidation.prototype.willUpdateFlags = function willUpdateFlags() {
+	    var _this3 = this;
+
+	    var touched = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+	    each(this._inits, function (item, index) {
+	      touched && _this3.willUpdateTouched(item.el, 'blur');
+	      _this3.willUpdateDirty(item.el);
+	      _this3.willUpdateModified(item.el);
+	    });
+	  };
+
+	  CheckboxValidation.prototype.reset = function reset() {
+	    this.resetFlags();
+	    each(this._inits, function (item, index) {
+	      item.init = item.el.checked;
+	      item.value = item.el.value;
+	    });
+	  };
+
+	  CheckboxValidation.prototype.updateClasses = function updateClasses(results) {
+	    var _this4 = this;
+
+	    var el = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+	    if (el) {
+	      // for another element
+	      this._updateClasses(el, results);
+	    } else {
+	      each(this._inits, function (item, index) {
+	        _this4._updateClasses(item.el, results);
+	      });
+	    }
+	  };
+
+	  CheckboxValidation.prototype._addItem = function _addItem(el, initial) {
+	    var item = {
+	      el: el,
+	      init: el.checked,
+	      value: el.value,
+	      initial: initial
+	    };
+
+	    var classIds = el.getAttribute(VALIDATE_UPDATE);
+	    if (classIds) {
+	      el.removeAttribute(VALIDATE_UPDATE);
+	      item.classIds = classIds.split(',');
+	    }
+
+	    this._inits.push(item);
+	    return item;
+	  };
+
+	  CheckboxValidation.prototype._setChecked = function _setChecked(values, el) {
+	    for (var i = 0, l = values.length; i < l; i++) {
+	      var value = values[i];
+	      if (!el.disabled && el.value === value && !el.checked) {
+	        el.checked = true;
+	      }
+	    }
+	  };
+
+	  CheckboxValidation.prototype._getValue = function _getValue(el) {
+	    var _this5 = this;
+
+	    if (!this._inits || this._inits.length === 0) {
+	      return el.checked;
+	    } else {
+	      var _ret = function () {
+	        var vals = [];
+	        each(_this5._inits, function (item, index) {
+	          item.el.checked && vals.push(item.el.value);
+	        });
+	        return {
+	          v: vals
+	        };
+	      }();
+
+	      if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+	    }
+	  };
+
+	  CheckboxValidation.prototype._getClassIds = function _getClassIds(el) {
+	    var classIds = void 0;
+	    each(this._inits, function (item, index) {
+	      if (item.el === el) {
+	        classIds = item.classIds;
+	      }
+	    });
+	    return classIds;
+	  };
+
+	  CheckboxValidation.prototype._checkModified = function _checkModified(target) {
+	    var _this6 = this;
+
+	    if (this._inits.length === 0) {
+	      return this._init !== target.checked;
+	    } else {
+	      var _ret2 = function () {
+	        var modified = false;
+	        each(_this6._inits, function (item, index) {
+	          if (!modified) {
+	            modified = item.init !== item.el.checked;
+	          }
+	        });
+	        return {
+	          v: modified
+	        };
+	      }();
+
+	      if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+	    }
+	  };
+
+	  return CheckboxValidation;
+	}(BaseValidation);
+
+	/**
+	 * RadioValidation class
+	 */
+
+	var RadioValidation = function (_BaseValidation) {
+	  babelHelpers.inherits(RadioValidation, _BaseValidation);
+
+	  function RadioValidation(field, model, vm, el, scope, validator, filters, detectBlur, detectChange) {
+	    babelHelpers.classCallCheck(this, RadioValidation);
+
+	    var _this = babelHelpers.possibleConstructorReturn(this, _BaseValidation.call(this, field, model, vm, el, scope, validator, filters, detectBlur, detectChange));
+
+	    _this._inits = [];
+	    return _this;
+	  }
+
+	  RadioValidation.prototype.manageElement = function manageElement(el, initial) {
+	    var _this2 = this;
+
+	    var scope = this._getScope();
+	    var item = this._addItem(el, initial);
+
+	    var model = item.model = this._model;
+	    if (model) {
+	      var value = this._evalModel(model, this._filters);
+	      this._setChecked(value, el, item);
+	      item.unwatch = scope.$watch(model, function (val, old) {
+	        if (val !== old) {
+	          if (_this2.guardValidate(item.el, 'change')) {
+	            return;
+	          }
+
+	          _this2.handleValidate(el, { noopable: item.initial });
+	          if (item.initial) {
+	            item.initial = null;
+	          }
+	        }
+	      });
+	    } else {
+	      var options = { field: this.field, noopable: initial };
+	      if (this._checkClassIds(el)) {
+	        options.el = el;
+	      }
+	      this._validator.validate(options);
+	    }
+	  };
+
+	  RadioValidation.prototype.unmanageElement = function unmanageElement(el) {
+	    var found = -1;
+	    each(this._inits, function (item, index) {
+	      if (item.el === el) {
+	        found = index;
+	      }
+	    });
+	    if (found === -1) {
+	      return;
+	    }
+
+	    this._inits.splice(found, 1);
+	    this._validator.validate({ field: this.field });
+	  };
+
+	  RadioValidation.prototype.willUpdateFlags = function willUpdateFlags() {
+	    var _this3 = this;
+
+	    var touched = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+	    each(this._inits, function (item, index) {
+	      touched && _this3.willUpdateTouched(item.el, 'blur');
+	      _this3.willUpdateDirty(item.el);
+	      _this3.willUpdateModified(item.el);
+	    });
+	  };
+
+	  RadioValidation.prototype.reset = function reset() {
+	    this.resetFlags();
+	    each(this._inits, function (item, index) {
+	      item.init = item.el.checked;
+	      item.value = item.el.value;
+	    });
+	  };
+
+	  RadioValidation.prototype.updateClasses = function updateClasses(results) {
+	    var _this4 = this;
+
+	    var el = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+	    if (el) {
+	      // for another element
+	      this._updateClasses(el, results);
+	    } else {
+	      each(this._inits, function (item, index) {
+	        _this4._updateClasses(item.el, results);
+	      });
+	    }
+	  };
+
+	  RadioValidation.prototype._addItem = function _addItem(el, initial) {
+	    var item = {
+	      el: el,
+	      init: el.checked,
+	      value: el.value,
+	      initial: initial
+	    };
+
+	    var classIds = el.getAttribute(VALIDATE_UPDATE);
+	    if (classIds) {
+	      el.removeAttribute(VALIDATE_UPDATE);
+	      item.classIds = classIds.split(',');
+	    }
+
+	    this._inits.push(item);
+	    return item;
+	  };
+
+	  RadioValidation.prototype._setChecked = function _setChecked(value, el, item) {
+	    if (el.value === value) {
+	      el.checked = true;
+	      this._init = el.checked;
+	      item.init = el.checked;
+	      item.value = value;
+	    }
+	  };
+
+	  RadioValidation.prototype._getValue = function _getValue(el) {
+	    var _this5 = this;
+
+	    if (!this._inits || this._inits.length === 0) {
+	      return el.checked;
+	    } else {
+	      var _ret = function () {
+	        var vals = [];
+	        each(_this5._inits, function (item, index) {
+	          item.el.checked && vals.push(item.el.value);
+	        });
+	        return {
+	          v: vals
+	        };
+	      }();
+
+	      if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+	    }
+	  };
+
+	  RadioValidation.prototype._getClassIds = function _getClassIds(el) {
+	    var classIds = void 0;
+	    each(this._inits, function (item, index) {
+	      if (item.el === el) {
+	        classIds = item.classIds;
+	      }
+	    });
+	    return classIds;
+	  };
+
+	  RadioValidation.prototype._checkModified = function _checkModified(target) {
+	    var _this6 = this;
+
+	    if (this._inits.length === 0) {
+	      return this._init !== target.checked;
+	    } else {
+	      var _ret2 = function () {
+	        var modified = false;
+	        each(_this6._inits, function (item, index) {
+	          if (!modified) {
+	            modified = item.init !== item.el.checked;
+	          }
+	        });
+	        return {
+	          v: modified
+	        };
+	      }();
+
+	      if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+	    }
+	  };
+
+	  return RadioValidation;
+	}(BaseValidation);
+
+	/**
+	 * SelectValidation class
+	 */
+
+	var SelectValidation = function (_BaseValidation) {
+	  babelHelpers.inherits(SelectValidation, _BaseValidation);
+
+	  function SelectValidation(field, model, vm, el, scope, validator, filters, detectBlur, detectChange) {
+	    babelHelpers.classCallCheck(this, SelectValidation);
+
+	    var _this = babelHelpers.possibleConstructorReturn(this, _BaseValidation.call(this, field, model, vm, el, scope, validator, filters, detectBlur, detectChange));
+
+	    _this._multiple = _this._el.hasAttribute('multiple');
+	    return _this;
+	  }
+
+	  SelectValidation.prototype.manageElement = function manageElement(el, initial) {
+	    var _this2 = this;
+
+	    var scope = this._getScope();
+	    var model = this._model;
+
+	    this._initial = initial;
+
+	    var classIds = el.getAttribute(VALIDATE_UPDATE);
+	    if (classIds) {
+	      el.removeAttribute(VALIDATE_UPDATE);
+	      this._classIds = classIds.split(',');
+	    }
+
+	    if (model) {
+	      var value = this._evalModel(model, this._filters);
+	      var values = !Array.isArray(value) ? [value] : value;
+	      this._setOption(values, el);
+	      this._unwatch = scope.$watch(model, function (val, old) {
+	        var values1 = !Array.isArray(val) ? [val] : val;
+	        var values2 = !Array.isArray(old) ? [old] : old;
+	        if (values1.slice().sort().toString() !== values2.slice().sort().toString()) {
+	          if (_this2.guardValidate(el, 'change')) {
+	            return;
+	          }
+
+	          _this2.handleValidate(el, { noopable: _this2._initial });
+	          if (_this2._initial) {
+	            _this2._initial = null;
+	          }
 	        }
 	      });
 	    }
-	  },
-	  methods: {
-	    loginUser: function loginUser() {
-	      _user2.default.authenticateUser(function () {
-	        // Do some stuff before redirect happens
-	      });
-	    }
-	  }
-	});
+	  };
 
-	exports.default = HomeComponent;
+	  SelectValidation.prototype.unmanageElement = function unmanageElement(el) {
+	    this._unwatch && this._unwatch();
+	  };
+
+	  SelectValidation.prototype.reset = function reset() {
+	    this.resetFlags();
+	  };
+
+	  SelectValidation.prototype._getValue = function _getValue(el) {
+	    var ret = [];
+
+	    for (var i = 0, l = el.options.length; i < l; i++) {
+	      var option = el.options[i];
+	      if (!option.disabled && option.selected) {
+	        ret.push(option.value);
+	      }
+	    }
+
+	    return ret;
+	  };
+
+	  SelectValidation.prototype._setOption = function _setOption(values, el) {
+	    for (var i = 0, l = values.length; i < l; i++) {
+	      var value = values[i];
+	      for (var j = 0, m = el.options.length; j < m; j++) {
+	        var option = el.options[j];
+	        if (!option.disabled && option.value === value && (!option.hasAttribute('selected') || !option.selected)) {
+	          option.selected = true;
+	        }
+	      }
+	    }
+	  };
+
+	  SelectValidation.prototype._checkModified = function _checkModified(target) {
+	    var values = this._getValue(target).slice().sort();
+	    if (this._init.length !== values.length) {
+	      return true;
+	    } else {
+	      var inits = this._init.slice().sort();
+	      return inits.toString() !== values.toString();
+	    }
+	  };
+
+	  return SelectValidation;
+	}(BaseValidation);
+
+	/**
+	 * Validator class
+	 */
+
+	var Validator$1 = function () {
+	  function Validator(name, dir, groups, classes) {
+	    var _this = this;
+
+	    babelHelpers.classCallCheck(this, Validator);
+
+	    this.name = name;
+
+	    this._scope = {};
+	    this._dir = dir;
+	    this._validations = {};
+	    this._checkboxValidations = {};
+	    this._radioValidations = {};
+	    this._groups = groups;
+	    this._groupValidations = {};
+	    this._events = {};
+	    this._modified = false;
+	    this._classes = classes;
+
+	    each(groups, function (group) {
+	      _this._groupValidations[group] = [];
+	    });
+	  }
+
+	  Validator.prototype.enableReactive = function enableReactive() {
+	    var vm = this._dir.vm;
+
+	    // define the validation scope
+	    exports$1.Vue.util.defineReactive(vm, this.name, this._scope);
+	    vm._validatorMaps[this.name] = this;
+
+	    // define the validation resetting meta method to vue instance
+	    this._defineResetValidation();
+
+	    // define the validate manually meta method to vue instance
+	    this._defineValidate();
+
+	    // define manually the validation errors
+	    this._defineSetValidationErrors();
+	  };
+
+	  Validator.prototype.disableReactive = function disableReactive() {
+	    var vm = this._dir.vm;
+	    vm.$setValidationErrors = null;
+	    delete vm['$setValidationErrors'];
+	    vm.$validate = null;
+	    delete vm['$validate'];
+	    vm.$validatorReset = null;
+	    delete vm['$validatorReset'];
+	    vm._validatorMaps[this.name] = null;
+	    delete vm._validatorMaps[this.name];
+	    vm[this.name] = null;
+	    delete vm[this.name];
+	  };
+
+	  Validator.prototype.registerEvents = function registerEvents() {
+	    var isSimplePath = exports$1.Vue.parsers.expression.isSimplePath;
+
+	    var attrs = this._dir.el.attributes;
+	    for (var i = 0, l = attrs.length; i < l; i++) {
+	      var event = attrs[i].name;
+	      if (REGEX_EVENT.test(event)) {
+	        var value = attrs[i].value;
+	        if (isSimplePath(value)) {
+	          value += '.apply(this, $arguments)';
+	        }
+	        event = event.replace(REGEX_EVENT, '');
+	        this._events[this._getEventName(event)] = this._dir.vm.$eval(value, true);
+	      }
+	    }
+	  };
+
+	  Validator.prototype.unregisterEvents = function unregisterEvents() {
+	    var _this2 = this;
+
+	    each(this._events, function (handler, event) {
+	      _this2._events[event] = null;
+	      delete _this2._events[event];
+	    });
+	  };
+
+	  Validator.prototype.manageValidation = function manageValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange) {
+	    var validation = null;
+
+	    if (el.tagName === 'SELECT') {
+	      validation = this._manageSelectValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange);
+	    } else if (el.type === 'checkbox') {
+	      validation = this._manageCheckboxValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange);
+	    } else if (el.type === 'radio') {
+	      validation = this._manageRadioValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange);
+	    } else {
+	      validation = this._manageBaseValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange);
+	    }
+
+	    validation.setValidationClasses(this._classes);
+
+	    return validation;
+	  };
+
+	  Validator.prototype.unmanageValidation = function unmanageValidation(field, el) {
+	    if (el.type === 'checkbox') {
+	      this._unmanageCheckboxValidation(field, el);
+	    } else if (el.type === 'radio') {
+	      this._unmanageRadioValidation(field, el);
+	    } else if (el.tagName === 'SELECT') {
+	      this._unmanageSelectValidation(field, el);
+	    } else {
+	      this._unmanageBaseValidation(field, el);
+	    }
+	  };
+
+	  Validator.prototype.addGroupValidation = function addGroupValidation(group, field) {
+	    var indexOf = exports$1.Vue.util.indexOf;
+
+	    var validation = this._getValidationFrom(field);
+	    var validations = this._groupValidations[group];
+
+	    validations && ! ~indexOf(validations, validation) && validations.push(validation);
+	  };
+
+	  Validator.prototype.removeGroupValidation = function removeGroupValidation(group, field) {
+	    var validation = this._getValidationFrom(field);
+	    var validations = this._groupValidations[group];
+
+	    validations && pull(validations, validation);
+	  };
+
+	  Validator.prototype.validate = function validate() {
+	    var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	    var _ref$el = _ref.el;
+	    var el = _ref$el === undefined ? null : _ref$el;
+	    var _ref$field = _ref.field;
+	    var field = _ref$field === undefined ? null : _ref$field;
+	    var _ref$touched = _ref.touched;
+	    var touched = _ref$touched === undefined ? false : _ref$touched;
+	    var _ref$noopable = _ref.noopable;
+	    var noopable = _ref$noopable === undefined ? false : _ref$noopable;
+	    var _ref$cb = _ref.cb;
+	    var cb = _ref$cb === undefined ? null : _ref$cb;
+
+	    if (!field) {
+	      // all
+	      each(this.validations, function (validation, key) {
+	        validation.willUpdateFlags(touched);
+	      });
+	      this._validates(cb);
+	    } else {
+	      // each field
+	      this._validate(field, touched, noopable, el, cb);
+	    }
+	  };
+
+	  Validator.prototype.setupScope = function setupScope() {
+	    var _this3 = this;
+
+	    this._defineProperties(function () {
+	      return _this3.validations;
+	    }, function () {
+	      return _this3._scope;
+	    });
+
+	    each(this._groups, function (name) {
+	      var validations = _this3._groupValidations[name];
+	      var group = {};
+	      exports$1.Vue.set(_this3._scope, name, group);
+	      _this3._defineProperties(function () {
+	        return validations;
+	      }, function () {
+	        return group;
+	      });
+	    });
+	  };
+
+	  Validator.prototype.waitFor = function waitFor(cb) {
+	    var method = '$activateValidator';
+	    var vm = this._dir.vm;
+
+	    vm[method] = function () {
+	      cb();
+	      vm[method] = null;
+	    };
+	  };
+
+	  Validator.prototype._defineResetValidation = function _defineResetValidation() {
+	    var _this4 = this;
+
+	    this._dir.vm.$resetValidation = function (cb) {
+	      _this4._resetValidation(cb);
+	    };
+	  };
+
+	  Validator.prototype._defineValidate = function _defineValidate() {
+	    var _this5 = this;
+
+	    this._dir.vm.$validate = function () {
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+
+	      var field = null;
+	      var touched = false;
+	      var cb = null;
+
+	      each(args, function (arg, index) {
+	        if (typeof arg === 'string') {
+	          field = arg;
+	        } else if (typeof arg === 'boolean') {
+	          touched = arg;
+	        } else if (typeof arg === 'function') {
+	          cb = arg;
+	        }
+	      });
+
+	      _this5.validate({ field: field, touched: touched, cb: cb });
+	    };
+	  };
+
+	  Validator.prototype._defineSetValidationErrors = function _defineSetValidationErrors() {
+	    var _this6 = this;
+
+	    this._dir.vm.$setValidationErrors = function (errors) {
+	      _this6._setValidationErrors(errors);
+	    };
+	  };
+
+	  Validator.prototype._validate = function _validate(field) {
+	    var touched = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	    var noopable = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+
+	    var _this7 = this;
+
+	    var el = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+	    var cb = arguments.length <= 4 || arguments[4] === undefined ? null : arguments[4];
+
+	    var scope = this._scope;
+
+	    var validation = this._getValidationFrom(field);
+	    if (validation) {
+	      validation.willUpdateFlags(touched);
+	      validation.validate(function (results) {
+	        exports$1.Vue.set(scope, field, results);
+	        _this7._fireEvents();
+	        cb && cb();
+	      }, noopable, el);
+	    }
+	  };
+
+	  Validator.prototype._validates = function _validates(cb) {
+	    var _this8 = this;
+
+	    var scope = this._scope;
+
+	    this._runValidates(function (validation, key, done) {
+	      validation.validate(function (results) {
+	        exports$1.Vue.set(scope, key, results);
+	        done();
+	      });
+	    }, function () {
+	      // finished
+	      _this8._fireEvents();
+	      cb && cb();
+	    });
+	  };
+
+	  Validator.prototype._getValidationFrom = function _getValidationFrom(field) {
+	    return this._validations[field] || this._checkboxValidations[field] && this._checkboxValidations[field].validation || this._radioValidations[field] && this._radioValidations[field].validation;
+	  };
+
+	  Validator.prototype._resetValidation = function _resetValidation(cb) {
+	    each(this.validations, function (validation, key) {
+	      validation.reset();
+	    });
+	    this._validates(cb);
+	  };
+
+	  Validator.prototype._setValidationErrors = function _setValidationErrors(errors) {
+	    var _this9 = this;
+
+	    var extend = exports$1.Vue.util.extend;
+
+	    // make tempolaly errors
+
+	    var temp = {};
+	    each(errors, function (error, index) {
+	      if (!temp[error.field]) {
+	        temp[error.field] = [];
+	      }
+	      temp[error.field].push(error);
+	    });
+
+	    // set errors
+	    each(temp, function (values, field) {
+	      var results = _this9._scope[field];
+	      var newResults = {};
+
+	      each(values, function (error) {
+	        if (error.validator) {
+	          results[error.validator] = error.message;
+	        }
+	      });
+
+	      results.valid = false;
+	      results.invalid = true;
+	      results.errors = values;
+	      extend(newResults, results);
+
+	      var validation = _this9._getValidationFrom(field);
+	      validation.willUpdateClasses(newResults, validation.el);
+
+	      exports$1.Vue.set(_this9._scope, field, newResults);
+	    });
+	  };
+
+	  Validator.prototype._manageBaseValidation = function _manageBaseValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange) {
+	    var validation = this._validations[field] = new BaseValidation(field, model, vm, el, scope, this, filters, detectBlur, detectChange);
+	    validation.manageElement(el, initial);
+	    return validation;
+	  };
+
+	  Validator.prototype._unmanageBaseValidation = function _unmanageBaseValidation(field, el) {
+	    var validation = this._validations[field];
+	    if (validation) {
+	      validation.unmanageElement(el);
+	      exports$1.Vue.delete(this._scope, field);
+	      this._validations[field] = null;
+	      delete this._validations[field];
+	    }
+	  };
+
+	  Validator.prototype._manageCheckboxValidation = function _manageCheckboxValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange) {
+	    var validationSet = this._checkboxValidations[field];
+	    if (!validationSet) {
+	      var validation = new CheckboxValidation(field, model, vm, el, scope, this, filters, detectBlur, detectChange);
+	      validationSet = { validation: validation, elements: 0 };
+	      this._checkboxValidations[field] = validationSet;
+	    }
+
+	    validationSet.elements++;
+	    validationSet.validation.manageElement(el, initial);
+	    return validationSet.validation;
+	  };
+
+	  Validator.prototype._unmanageCheckboxValidation = function _unmanageCheckboxValidation(field, el) {
+	    var validationSet = this._checkboxValidations[field];
+	    if (validationSet) {
+	      validationSet.elements--;
+	      validationSet.validation.unmanageElement(el);
+	      if (validationSet.elements === 0) {
+	        exports$1.Vue.delete(this._scope, field);
+	        this._checkboxValidations[field] = null;
+	        delete this._checkboxValidations[field];
+	      }
+	    }
+	  };
+
+	  Validator.prototype._manageRadioValidation = function _manageRadioValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange) {
+	    var validationSet = this._radioValidations[field];
+	    if (!validationSet) {
+	      var validation = new RadioValidation(field, model, vm, el, scope, this, filters, detectBlur, detectChange);
+	      validationSet = { validation: validation, elements: 0 };
+	      this._radioValidations[field] = validationSet;
+	    }
+
+	    validationSet.elements++;
+	    validationSet.validation.manageElement(el, initial);
+	    return validationSet.validation;
+	  };
+
+	  Validator.prototype._unmanageRadioValidation = function _unmanageRadioValidation(field, el) {
+	    var validationSet = this._radioValidations[field];
+	    if (validationSet) {
+	      validationSet.elements--;
+	      validationSet.validation.unmanageElement(el);
+	      if (validationSet.elements === 0) {
+	        exports$1.Vue.delete(this._scope, field);
+	        this._radioValidations[field] = null;
+	        delete this._radioValidations[field];
+	      }
+	    }
+	  };
+
+	  Validator.prototype._manageSelectValidation = function _manageSelectValidation(field, model, vm, el, scope, filters, initial, detectBlur, detectChange) {
+	    var validation = this._validations[field] = new SelectValidation(field, model, vm, el, scope, this, filters, detectBlur, detectChange);
+	    validation.manageElement(el, initial);
+	    return validation;
+	  };
+
+	  Validator.prototype._unmanageSelectValidation = function _unmanageSelectValidation(field, el) {
+	    var validation = this._validations[field];
+	    if (validation) {
+	      validation.unmanageElement(el);
+	      exports$1.Vue.delete(this._scope, field);
+	      this._validations[field] = null;
+	      delete this._validations[field];
+	    }
+	  };
+
+	  Validator.prototype._fireEvent = function _fireEvent(type) {
+	    for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	      args[_key2 - 1] = arguments[_key2];
+	    }
+
+	    var handler = this._events[this._getEventName(type)];
+	    handler && this._dir.vm.$nextTick(function () {
+	      handler.apply(null, args);
+	    });
+	  };
+
+	  Validator.prototype._fireEvents = function _fireEvents() {
+	    var scope = this._scope;
+
+	    scope.touched && this._fireEvent('touched');
+	    scope.dirty && this._fireEvent('dirty');
+
+	    if (this._modified !== scope.modified) {
+	      this._fireEvent('modified', scope.modified);
+	      this._modified = scope.modified;
+	    }
+
+	    var valid = scope.valid;
+	    this._fireEvent(valid ? 'valid' : 'invalid');
+	  };
+
+	  Validator.prototype._getEventName = function _getEventName(type) {
+	    return this.name + ':' + type;
+	  };
+
+	  Validator.prototype._defineProperties = function _defineProperties(validationsGetter, targetGetter) {
+	    var _this10 = this;
+
+	    var bind = exports$1.Vue.util.bind;
+
+	    each({
+	      valid: { fn: this._defineValid, arg: validationsGetter },
+	      invalid: { fn: this._defineInvalid, arg: targetGetter },
+	      touched: { fn: this._defineTouched, arg: validationsGetter },
+	      untouched: { fn: this._defineUntouched, arg: targetGetter },
+	      modified: { fn: this._defineModified, arg: validationsGetter },
+	      dirty: { fn: this._defineDirty, arg: validationsGetter },
+	      pristine: { fn: this._definePristine, arg: targetGetter },
+	      errors: { fn: this._defineErrors, arg: validationsGetter }
+	    }, function (descriptor, name) {
+	      Object.defineProperty(targetGetter(), name, {
+	        enumerable: true,
+	        configurable: true,
+	        get: function get() {
+	          return bind(descriptor.fn, _this10)(descriptor.arg);
+	        }
+	      });
+	    });
+	  };
+
+	  Validator.prototype._runValidates = function _runValidates(fn, cb) {
+	    var length = Object.keys(this.validations).length;
+
+	    var count = 0;
+	    each(this.validations, function (validation, key) {
+	      fn(validation, key, function () {
+	        ++count;
+	        count >= length && cb();
+	      });
+	    });
+	  };
+
+	  Validator.prototype._walkValidations = function _walkValidations(validations, property, condition) {
+	    var _this11 = this;
+
+	    var hasOwn = exports$1.Vue.util.hasOwn;
+	    var ret = condition;
+
+	    each(validations, function (validation, key) {
+	      if (ret === !condition) {
+	        return;
+	      }
+	      if (hasOwn(_this11._scope, validation.field)) {
+	        var target = _this11._scope[validation.field];
+	        if (target && target[property] === !condition) {
+	          ret = !condition;
+	        }
+	      }
+	    });
+
+	    return ret;
+	  };
+
+	  Validator.prototype._defineValid = function _defineValid(validationsGetter) {
+	    return this._walkValidations(validationsGetter(), 'valid', true);
+	  };
+
+	  Validator.prototype._defineInvalid = function _defineInvalid(scopeGetter) {
+	    return !scopeGetter().valid;
+	  };
+
+	  Validator.prototype._defineTouched = function _defineTouched(validationsGetter) {
+	    return this._walkValidations(validationsGetter(), 'touched', false);
+	  };
+
+	  Validator.prototype._defineUntouched = function _defineUntouched(scopeGetter) {
+	    return !scopeGetter().touched;
+	  };
+
+	  Validator.prototype._defineModified = function _defineModified(validationsGetter) {
+	    return this._walkValidations(validationsGetter(), 'modified', false);
+	  };
+
+	  Validator.prototype._defineDirty = function _defineDirty(validationsGetter) {
+	    return this._walkValidations(validationsGetter(), 'dirty', false);
+	  };
+
+	  Validator.prototype._definePristine = function _definePristine(scopeGetter) {
+	    return !scopeGetter().dirty;
+	  };
+
+	  Validator.prototype._defineErrors = function _defineErrors(validationsGetter) {
+	    var _this12 = this;
+
+	    var hasOwn = exports$1.Vue.util.hasOwn;
+	    var isPlainObject = exports$1.Vue.util.isPlainObject;
+	    var errors = [];
+
+	    each(validationsGetter(), function (validation, key) {
+	      if (hasOwn(_this12._scope, validation.field)) {
+	        var target = _this12._scope[validation.field];
+	        if (target && !empty(target.errors)) {
+	          each(target.errors, function (err, index) {
+	            var error = { field: validation.field };
+	            if (isPlainObject(err)) {
+	              if (err.validator) {
+	                error.validator = err.validator;
+	              }
+	              error.message = err.message;
+	            } else if (typeof err === 'string') {
+	              error.message = err;
+	            }
+	            errors.push(error);
+	          });
+	        }
+	      }
+	    });
+
+	    return empty(errors) ? undefined : errors.sort(function (a, b) {
+	      return a.field < b.field ? -1 : 1;
+	    });
+	  };
+
+	  babelHelpers.createClass(Validator, [{
+	    key: 'validations',
+	    get: function get() {
+	      var extend = exports$1.Vue.util.extend;
+
+	      var ret = {};
+	      extend(ret, this._validations);
+
+	      each(this._checkboxValidations, function (dataset, key) {
+	        ret[key] = dataset.validation;
+	      });
+
+	      each(this._radioValidations, function (dataset, key) {
+	        ret[key] = dataset.validation;
+	      });
+
+	      return ret;
+	    }
+	  }]);
+	  return Validator;
+	}();
+
+	function Validator (Vue) {
+	  var FragmentFactory = Vue.FragmentFactory;
+	  var vIf = Vue.directive('if');
+	  var _Vue$util = Vue.util;
+	  var isArray = _Vue$util.isArray;
+	  var isPlainObject = _Vue$util.isPlainObject;
+	  var createAnchor = _Vue$util.createAnchor;
+	  var replace = _Vue$util.replace;
+	  var extend = _Vue$util.extend;
+	  var camelize = _Vue$util.camelize;
+
+	  /**
+	   * `validator` element directive
+	   */
+
+	  Vue.elementDirective('validator', {
+	    params: ['name', 'groups', 'lazy', 'classes'],
+
+	    bind: function bind() {
+	      var params = this.params;
+
+	      if (process.env.NODE_ENV !== 'production' && !params.name) {
+	        warn('validator element requires a \'name\' attribute: ' + '(e.g. <validator name="validator1">...</validator>)');
+	        return;
+	      }
+
+	      this.validatorName = '$' + camelize(params.name);
+	      if (!this.vm._validatorMaps) {
+	        throw new Error('Invalid validator management error');
+	      }
+
+	      var classes = {};
+	      if (isPlainObject(this.params.classes)) {
+	        classes = this.params.classes;
+	      }
+
+	      this.setupValidator(classes);
+	      this.setupFragment(params.lazy);
+	    },
+	    unbind: function unbind() {
+	      this.teardownFragment();
+	      this.teardownValidator();
+	    },
+	    getGroups: function getGroups() {
+	      var params = this.params;
+	      var groups = [];
+
+	      if (params.groups) {
+	        if (isArray(params.groups)) {
+	          groups = params.groups;
+	        } else if (!isPlainObject(params.groups) && typeof params.groups === 'string') {
+	          groups.push(params.groups);
+	        }
+	      }
+
+	      return groups;
+	    },
+	    setupValidator: function setupValidator(classes) {
+	      var validator = this.validator = new Validator$1(this.validatorName, this, this.getGroups(), classes);
+	      validator.enableReactive();
+	      validator.setupScope();
+	      validator.registerEvents();
+	    },
+	    teardownValidator: function teardownValidator() {
+	      this.validator.unregisterEvents();
+	      this.validator.disableReactive();
+
+	      if (this.validatorName) {
+	        this.validatorName = null;
+	        this.validator = null;
+	      }
+	    },
+	    setupFragment: function setupFragment(lazy) {
+	      var _this = this;
+
+	      var vm = this.vm;
+
+	      this.validator.waitFor(function () {
+	        _this.anchor = createAnchor('vue-validator');
+	        replace(_this.el, _this.anchor);
+	        extend(vm.$options, { _validator: _this.validatorName });
+	        _this.factory = new FragmentFactory(vm, _this.el.innerHTML);
+	        vIf.insert.call(_this);
+	      });
+
+	      !lazy && vm.$activateValidator();
+	    },
+	    teardownFragment: function teardownFragment() {
+	      vIf.unbind.call(this);
+	    }
+	  });
+	}
+
+	function ValidatorError (Vue) {
+	  /**
+	   * ValidatorError component
+	   */
+
+	  var error = {
+	    name: 'validator-error',
+
+	    props: {
+	      field: {
+	        type: String,
+	        required: true
+	      },
+	      validator: {
+	        type: String
+	      },
+	      message: {
+	        type: String,
+	        required: true
+	      },
+	      partial: {
+	        type: String,
+	        default: 'validator-error-default'
+	      }
+	    },
+
+	    template: '<div><partial :name="partial"></partial></div>',
+
+	    partials: {}
+	  };
+
+	  // only use ValidatorError component
+	  error.partials['validator-error-default'] = '<p>{{field}}: {{message}}</p>';
+
+	  return error;
+	}
+
+	function Errors (Vue) {
+	  var _ = Vue.util;
+	  var error = ValidatorError(Vue); // import ValidatorError component
+
+	  /**
+	   * ValidatorErrors component
+	   */
+
+	  var errors = {
+	    name: 'validator-errors',
+
+	    props: {
+	      validation: {
+	        type: Object,
+	        required: true
+	      },
+	      group: {
+	        type: String,
+	        default: null
+	      },
+	      field: {
+	        type: String,
+	        default: null
+	      },
+	      component: {
+	        type: String,
+	        default: 'validator-error'
+	      }
+	    },
+
+	    computed: {
+	      errors: function errors() {
+	        var _this = this;
+
+	        if (this.group !== null) {
+	          return this.validation[this.group].errors;
+	        } else if (this.field !== null) {
+	          var target = this.validation[this.field];
+	          if (!target.errors) {
+	            return;
+	          }
+
+	          return target.errors.map(function (error) {
+	            var err = { field: _this.field };
+	            if (_.isPlainObject(error)) {
+	              if (error.validator) {
+	                err.validator = error.validator;
+	              }
+	              err.message = error.message;
+	            } else if (typeof error === 'string') {
+	              err.message = error;
+	            }
+	            return err;
+	          });
+	        } else {
+	          return this.validation.errors;
+	        }
+	      }
+	    },
+
+	    template: '<template v-for="error in errors">' + '<component :is="component" :partial="partial" :field="error.field" :validator="error.validator" :message="error.message">' + '</component>' + '</template>',
+
+	    components: {}
+	  };
+
+	  // define 'partial' prop
+	  errors.props['partial'] = error.props['partial'];
+
+	  // only use ValidatorErrors component
+	  errors.components[error.name] = error;
+
+	  // install ValidatorErrors component
+	  Vue.component(errors.name, errors);
+
+	  return errors;
+	}
+
+	/**
+	 * plugin
+	 *
+	 * @param {Function} Vue
+	 * @param {Object} options
+	 */
+
+	function plugin(Vue) {
+	  var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	  if (plugin.installed) {
+	    warn('already installed.');
+	    return;
+	  }
+
+	  exports$1.Vue = Vue;
+	  Asset(Vue);
+	  Errors(Vue);
+
+	  Override(Vue);
+	  Validator(Vue);
+	  ValidateClass(Vue);
+	  Validate(Vue);
+	}
+
+	plugin.version = '2.1.5';
+
+	if (typeof window !== 'undefined' && window.Vue) {
+	  window.Vue.use(plugin);
+	}
+
+	module.exports = plugin;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 6 */
+/* 6 */,
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15982,9 +18688,9 @@
 	  value: true
 	});
 
-	var _db = __webpack_require__(7);
+	var _db = __webpack_require__(8);
 
-	var firebase = __webpack_require__(8);
+	var firebase = __webpack_require__(9);
 
 	var User = {
 	  authenticateUser: function authenticateUser(next) {
@@ -16006,7 +18712,7 @@
 	exports.default = User;
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16014,9 +18720,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var firebase = __webpack_require__(8);
-	__webpack_require__(10);
-	__webpack_require__(12);
+	var firebase = __webpack_require__(9);
+	__webpack_require__(11);
+	__webpack_require__(13);
 
 	var config = {
 	  apiKey: "AIzaSyBvhOuLP2l4lHvwRLTYe6epxc9mThjMjMg",
@@ -16035,7 +18741,7 @@
 	exports.auth = auth;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -16045,12 +18751,12 @@
 	 *
 	 *   firebase = require('firebase/app');
 	 */
-	__webpack_require__(9);
+	__webpack_require__(10);
 	module.exports = firebase;
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*! @license Firebase v3.0.1
@@ -16083,7 +18789,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -16093,13 +18799,13 @@
 	 *
 	 *   auth = require('firebase/auth');
 	 */
-	__webpack_require__(9);
-	__webpack_require__(11);
+	__webpack_require__(10);
+	__webpack_require__(12);
 	module.exports = firebase.auth;
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/*! @license Firebase v3.0.1
@@ -16402,7 +19108,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -16412,13 +19118,13 @@
 	 *
 	 *   database = require('firebase/database');
 	 */
-	__webpack_require__(9);
-	__webpack_require__(13);
+	__webpack_require__(10);
+	__webpack_require__(14);
 	module.exports = firebase.database;
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/*! @license Firebase v3.0.1
@@ -16669,189 +19375,21 @@
 
 
 /***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class=\"main-montage-abs flex\">\n  <div class=\"logo-container flex fill align-middle-center column-layout\">\n    <div class=\"montage-image\">\n      <img src=\"/build/img/logo_new.png\" />\n    </div>\n    <div class=\"montage-actions\">\n      <a class=\"main-montage-btn\" @click.prevent=\"loginUser\">Connect w/ Facebook</a>\n    </div>\n  </div>\n</div>\n"
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	var _base = __webpack_require__(16);
-
-	var _base2 = _interopRequireDefault(_base);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var BaseAppComponent = _vue2.default.extend({
-	  template: _base2.default
-	});
-
-	exports.default = BaseAppComponent;
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class=\"app-main\">\n  <!-- App Navigation -->\n  <header>\n    <nav>\n      <div class=\"logo\">\n        <div class=\"responsive-wrapper\">\n          <img src=\"/build/img/logo_new_icon.png\" />\n        </div>\n      </div>\n      <ul class=\"nav-items\">\n        <li>\n          <a v-link=\"{ path: '/app/exams' }\">\n            <div class=\"navicon\">\n              <i class=\"material-icons\">dashboard</i>\n            </div>\n            <div class=\"navtext\">\n              Exams\n            </div>\n          </a>\n        </li>\n      </ul>\n    </nav>\n  </header>\n  <!-- Main App Display -->\n  <section class=\"main-app-display\">\n    <div id=\"exam-notifications\" class=\"mdl-js-snackbar mdl-snackbar\">\n      <div class=\"mdl-snackbar__text\"></div>\n      <button class=\"mdl-snackbar__action\" type=\"button\"></button>\n    </div>\n    <router-view></router-view>\n  </section>\n</div>\n"
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.RunExamComponent = exports.RunHomeComponent = undefined;
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	var _superagent = __webpack_require__(18);
-
-	var _superagent2 = _interopRequireDefault(_superagent);
-
-	var _marked = __webpack_require__(24);
-
-	var _marked2 = _interopRequireDefault(_marked);
-
-	var _main = __webpack_require__(25);
-
-	var _main2 = _interopRequireDefault(_main);
-
-	var _home = __webpack_require__(26);
-
-	var _home2 = _interopRequireDefault(_home);
-
-	var _utils = __webpack_require__(27);
-
-	var _exam = __webpack_require__(28);
-
-	var _exam2 = _interopRequireDefault(_exam);
-
-	var _user = __webpack_require__(6);
-
-	var _user2 = _interopRequireDefault(_user);
-
-	var _question = __webpack_require__(29);
-
-	var _question2 = _interopRequireDefault(_question);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var RunHomeComponent = _vue2.default.extend({
-	  template: _home2.default
-	});
-
-	var RunExamComponent = _vue2.default.extend({
-	  template: _main2.default,
-	  data: function data() {
-	    return {
-	      exam: {},
-	      answers: {},
-	      questions: [],
-	      examReport: {},
-	      markingExam: false,
-	      finishedExam: false,
-	      currentQuestion: 0
-	    };
-	  },
-
-	  route: {
-	    data: function data(transition) {
-	      var _this = this;
-
-	      _user2.default.checkLoggedIn(function (user) {
-	        if (!user) {
-	          _this.$route.router.go({ name: 'runner_home' });
-	        }
-	        var examId = _this.$route.params.exam_id;
-	        _exam2.default.get(examId, function (exam) {
-	          _question2.default.all(examId, function (questions) {
-	            transition.next({
-	              user: user,
-	              exam: (0, _utils.idfyObj)(examId, exam),
-	              questions: (0, _utils.objectToArray)(questions)
-	            });
-	            (0, _utils.loadUI)();
-	          });
-	        });
-	      });
-	    }
-	  },
-	  methods: {
-	    submitExam: function submitExam($event) {
-	      var _this2 = this;
-
-	      this.markingExam = true;
-	      var examId = this.$route.params.exam_id;
-	      _superagent2.default.post('/scorer/' + examId + '/').send({
-	        data: this.answers,
-	        uid: this.user.uid
-	      }).end(function (err, res) {
-	        _this2.examReport = res.body;
-	        _this2.markingExam = false;
-	        _this2.finishedExam = true;
-	      });
-	    },
-	    nextQuestion: function nextQuestion($event) {
-	      if (this.currentQuestion < this.questions.length - 1) {
-	        this.currentQuestion += 1;
-	        (0, _utils.loadUI)();
-	      }
-	    },
-	    prevQuestion: function prevQuestion($event) {
-	      if (this.currentQuestion > 0) {
-	        this.currentQuestion -= 1;
-	        (0, _utils.loadUI)();
-	      }
-	    },
-	    resetExam: function resetExam($event) {
-	      this.currentQuestion = 0;
-	      this.answers = {};
-	      this.examReport = {};
-	      this.markingExam = false;
-	      this.finishedExam = false;
-	      this.currentQuestion = 0;
-	    },
-	    closeWindow: function closeWindow($event) {
-	      window.close();
-	    }
-	  },
-	  filters: {
-	    marked: _marked2.default
-	  }
-	});
-
-	exports.RunHomeComponent = RunHomeComponent;
-	exports.RunExamComponent = RunExamComponent;
-
-/***/ },
-/* 18 */
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Module dependencies.
 	 */
 
-	var Emitter = __webpack_require__(19);
-	var reduce = __webpack_require__(20);
-	var requestBase = __webpack_require__(21);
-	var isObject = __webpack_require__(22);
+	var Emitter = __webpack_require__(20);
+	var reduce = __webpack_require__(21);
+	var requestBase = __webpack_require__(22);
+	var isObject = __webpack_require__(23);
 
 	/**
 	 * Root reference for iframes.
@@ -16900,7 +19438,7 @@
 	 * Expose `request`.
 	 */
 
-	var request = module.exports = __webpack_require__(23).bind(null, Request);
+	var request = module.exports = __webpack_require__(24).bind(null, Request);
 
 	/**
 	 * Determine XHR.
@@ -17924,7 +20462,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -18093,7 +20631,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	
@@ -18122,13 +20660,13 @@
 	};
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Module of mixed-in functions shared between node and client code
 	 */
-	var isObject = __webpack_require__(22);
+	var isObject = __webpack_require__(23);
 
 	/**
 	 * Clear previous timeout.
@@ -18294,7 +20832,7 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	/**
@@ -18313,7 +20851,7 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	// The node and browser modules expose versions of this with the
@@ -18351,7 +20889,7 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -19643,19 +22181,9 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	module.exports = "<div>\n  <header class=\"horizontal\">\n    <div class=\"shunted-container flex align-middle-left\">\n      <nav class=\"fill\">\n        <div class=\"logo\">\n          <div class=\"responsive-wrapper\">\n            <img src=\"/build/img/logo_new_icon.png\" />\n          </div>\n        </div>\n      </nav>\n      <div class=\"header-controls inverted\">\n        <span class=\"user-information mdl-color-text--white\">\n          Logged in as {{user.displayName}}\n        </span>\n        <img v-bind:src=\"user.photoURL\" />\n        <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon mdl-color-text--white\">\n          <i class=\"material-icons\">more_vert</i>\n        </mdl-button>\n        <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n          <mdl-menu-item v-link=\"{ path: '/app/profile'}\">Profile</mdl-menu-item>\n          <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n        </mdl-menu>\n      </div>\n    </div>\n  </header>\n  <div v-if=\"$loadingRouteData || markingExam\" class=\"data-loading\" v-bind:class=\"{ 'dimmed': markingExam }\">\n    <mdl-spinner></mdl-spinner>\n  </div>\n  <main class=\"padded-top\">\n    <div v-if=\"!$loadingRouteData\" class=\"shunted-container\">\n      <div class=\"report-container mdl-color--white mdl-shadow--2dp\" v-if=\"finishedExam\">\n        <div class=\"report-header\">\n          <div class=\"rounded-container\">\n            <img src=\"/build/img/tick.png\" />\n          </div>\n          <h1>Here are your results</h1>\n        </div>\n        <h1 class=\"test-title\">{{ exam.name }}</h1>\n        <div class=\"test-score\">\n          <span>Your score: {{ examReport.score }}/{{ questions.length }}</span>\n        </div>\n        <mdl-button raised colored @click=\"resetExam\" class=\"mdl-js-ripple-effect mdl-color--deep-orange\">Try Exam Again</mdl-button>\n        <mdl-button raised colored @click=\"closeWindow\" class=\"mdl-js-ripple-effect mdl-color--deep-orange\">Close this window</mdl-button>\n      </div>\n      <div class=\"test-container mdl-color--white mdl-shadow--2dp\" v-if=\"!finishedExam\">\n        <h1 class=\"test-title fill\">{{ exam.name }}</h1>\n        <div class=\"question-container column-layout flex align-top-left\" v-for=\"(qIdx, question) in questions\" v-if=\"$index == currentQuestion\">\n          <div class=\"count\">Question {{$index + 1}}/{{ questions.length }}</div>\n          <div class=\"question-text fill\" v-html=\"question.text || '' | marked\"></div>\n          <div class=\"question-options\">\n            <div class=\"question-option flex align-middle-left\" v-for=\"option in question.options\">\n              <label for=\"question-correct-{{qIdx}}-{{$index}}\" class=\"mdl-radio mdl-js-radio mdl-js-ripple-effect\">\n                <input type=\"radio\" id=\"question-correct-{{qIdx}}-{{$index}}\" name=\"question-correct-{{qIdx}}\" class=\"mdl-radio__button\" v-model=\"answers[question.__id]\" value=\"{{$index}}\">\n              </label>\n              <div>\n                {{option.text}}\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"test-controls\">\n          <div class=\"progress-meter\">\n\n          </div>\n          <div class=\"buttons\">\n            <mdl-button raised colored @click=\"prevQuestion\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Previous Question</mdl-button>\n            <mdl-button raised colored @click=\"nextQuestion\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Next Question</mdl-button>\n            <mdl-button raised colored @click=\"submitExam\" class=\"mdl-js-ripple-effect mdl-color--deep-orange\">Submit Exam</mdl-button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </main>\n</div>\n"
-
-/***/ },
-/* 26 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class=\"main-montage-abs flex\">\n  <div class=\"logo-container flex fill align-middle-center column-layout\">\n    <div class=\"montage-image\">\n      <img src=\"/build/img/logo_new.png\" />\n    </div>\n    <div class=\"montage-actions\">\n      <button class=\"main-montage-btn\">Connect w/ Facebook</button>\n    </div>\n  </div>\n</div>\n"
-
-/***/ },
-/* 27 */
+/* 26 */,
+/* 27 */,
+/* 28 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -19696,7 +22224,7 @@
 	exports.objectToArray = objectToArray;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19705,7 +22233,7 @@
 	  value: true
 	});
 
-	var _db = __webpack_require__(7);
+	var _db = __webpack_require__(8);
 
 	var baseRef = _db.database.ref('exams');
 	var baseQuestionRef = _db.database.ref('questions');
@@ -19755,7 +22283,7 @@
 	exports.default = Exam;
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19764,7 +22292,7 @@
 	  value: true
 	});
 
-	var _db = __webpack_require__(7);
+	var _db = __webpack_require__(8);
 
 	var baseRef = _db.database.ref('questions');
 
@@ -19795,274 +22323,8 @@
 	exports.default = Question;
 
 /***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.BaseExamComponent = exports.SingleExamComponent = exports.ListExamComponent = undefined;
-
-	var _lodash = __webpack_require__(31);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _marked = __webpack_require__(24);
-
-	var _marked2 = _interopRequireDefault(_marked);
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	var _list = __webpack_require__(33);
-
-	var _list2 = _interopRequireDefault(_list);
-
-	var _single = __webpack_require__(34);
-
-	var _single2 = _interopRequireDefault(_single);
-
-	var _base = __webpack_require__(35);
-
-	var _base2 = _interopRequireDefault(_base);
-
-	var _utils = __webpack_require__(27);
-
-	var _user = __webpack_require__(6);
-
-	var _user2 = _interopRequireDefault(_user);
-
-	var _exam = __webpack_require__(28);
-
-	var _exam2 = _interopRequireDefault(_exam);
-
-	var _question = __webpack_require__(29);
-
-	var _question2 = _interopRequireDefault(_question);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var BaseExamComponent = _vue2.default.extend({
-	  template: _base2.default,
-	  data: function data() {
-	    return {
-	      user: {}
-	    };
-	  },
-
-	  route: {
-	    data: function data(transition) {
-	      var _this = this;
-
-	      _user2.default.checkLoggedIn(function (user) {
-	        if (!user) {
-	          _this.$route.router.go({ name: 'home' });
-	        }
-	        transition.next({
-	          user: user
-	        });
-	      });
-	    },
-
-	    waitForData: true
-	  },
-	  methods: {
-	    logout: function logout() {
-	      _user2.default.logoutUser(function (err) {
-	        if (!err) console.log("Logging out user");
-	      });
-	    }
-	  }
-	});
-
-	var ListExamComponent = _vue2.default.extend({
-	  template: _list2.default,
-	  data: function data() {
-	    return {
-	      newExam: {},
-	      exams: {},
-	      index: -1
-	    };
-	  },
-
-	  route: {
-	    data: function data(transition) {
-	      var uid = this.$parent.user.uid;
-	      _exam2.default.all(uid, function (exams) {
-	        transition.next({
-	          exams: (0, _utils.objectToArray)(exams)
-	        });
-	      });
-	    }
-	  },
-	  methods: {
-	    showCreateModal: function showCreateModal(editingFlag, index, item) {
-	      this.index = -1;
-	      this.newExam = {};
-	      this.$refs.createExamDialog.open();
-	      if (editingFlag === 'editing') {
-	        this.newExam = _lodash2.default.assign({}, item);
-	        this.index = index;
-	      }
-	    },
-	    deleteExam: function deleteExam(index, exam) {
-	      var _this2 = this;
-
-	      swal({
-	        title: "Are you sure?",
-	        text: "You are about to delete this exam!",
-	        type: "warning",
-	        showCancelButton: true,
-	        confirmButtonText: "Yes, delete it!",
-	        closeOnConfirm: true
-	      }, function () {
-	        _exam2.default.delete(exam.__id, function (error) {
-	          if (!error) {
-	            _this2.exams.splice(index, 1); // you could do this.exams.$remove(this.index)
-	            (0, _utils.notify)("Successfully deleted the test");
-	          }
-	        });
-	      });
-	    },
-	    createExam: function createExam(event) {
-	      var _this3 = this;
-
-	      var uid = this.$parent.user.uid;
-	      if (this.newExam.hasOwnProperty('__id')) {
-	        _exam2.default.update(this.newExam, function (err, key) {
-	          if (!err) {
-	            _this3.exams.$set(_this3.index, _this3.newExam);
-	            _this3.newExam = {};
-	            _this3.index = -1;
-	            _this3.$refs.createExamDialog.close();
-	            (0, _utils.notify)("Successfully updated the test");
-	          } else {
-	            console.log("Error occured while trying to update exam");
-	          }
-	        });
-	      } else {
-	        _exam2.default.create(uid, this.newExam, function (err, key) {
-	          if (!err) {
-	            var _fb_form = (0, _utils.idfyObj)(key, _this3.newExam);
-	            _this3.exams.push(_fb_form);
-	            _this3.newExam = {};
-	            _this3.$refs.createExamDialog.close();
-	            (0, _utils.notify)("Successfully added the test");
-	          } else {
-	            console.log("Error occured while trying to create exam.");
-	          }
-	        });
-	      }
-	    }
-	  }
-	});
-
-	var SingleExamComponent = _vue2.default.extend({
-	  template: _single2.default,
-	  data: function data() {
-	    return {
-	      questions: [],
-	      question: {
-	        text: '',
-	        is_correct: 0,
-	        options: []
-	      },
-	      addingQuestion: false,
-	      numberOfOptions: 2,
-	      displayPreview: true
-	    };
-	  },
-
-	  route: {
-	    activate: function activate() {
-	      (0, _utils.loadUI)();
-	    },
-	    data: function data(transition) {
-	      var examId = this.$route.params.exam_id;
-	      _exam2.default.get(examId, function (exam) {
-	        _question2.default.all(examId, function (questions) {
-	          console.log(questions);
-	          transition.next({
-	            exam: (0, _utils.idfyObj)(examId, exam),
-	            questions: (0, _utils.objectToArray)(questions)
-	          });
-	        });
-	      });
-	    }
-	  },
-	  methods: {
-	    displayForm: function displayForm() {
-	      this.addingQuestion = true;
-	    },
-	    resetQuestion: function resetQuestion() {
-	      this.question = {
-	        text: '',
-	        is_correct: 0,
-	        options: []
-	      };
-	      this.numberOfOptions = 2;
-	    },
-	    addOption: function addOption() {
-	      if (this.numberOfOptions < 5) {
-	        this.numberOfOptions += 1;
-	        (0, _utils.loadUI)();
-	      }
-	    },
-	    closeForm: function closeForm() {
-	      this.addingQuestion = false;
-	      this.resetQuestion();
-	    },
-	    createQuestion: function createQuestion(event) {
-	      var _this4 = this;
-
-	      var uid = this.$parent.user.uid;
-	      _question2.default.create(uid, this.exam.__id, this.question, function (err, key) {
-	        if (err) {
-	          console.log("Error occured while trying to create question.");
-	        } else {
-	          var _fb_q = (0, _utils.idfyObj)(key, _this4.question);
-	          _this4.questions.push(_fb_q);
-	          _this4.closeForm();
-	          (0, _utils.notify)("Successfully added the question");
-	        }
-	      });
-	    },
-	    deleteQuestion: function deleteQuestion(id, idx, event) {
-	      var _this5 = this;
-
-	      swal({
-	        title: "Are you sure?",
-	        text: "You are about to delete this question from this exam!",
-	        type: "warning",
-	        showCancelButton: true,
-	        confirmButtonText: "Yes, delete it!",
-	        closeOnConfirm: true
-	      }, function () {
-	        _question2.default.delete(_this5.exam.__id, id, function (err) {
-	          if (err) {
-	            console.log("Error occured while trying to delete question.");
-	          } else {
-	            _this5.questions.splice(idx, 1);
-	            (0, _utils.notify)("Successfully deleted the question");
-	          }
-	        });
-	      });
-	    }
-	  },
-	  filters: {
-	    marked: _marked2.default
-	  }
-	});
-
-	exports.ListExamComponent = ListExamComponent;
-	exports.SingleExamComponent = SingleExamComponent;
-	exports.BaseExamComponent = BaseExamComponent;
-
-/***/ },
-/* 31 */
+/* 31 */,
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -36470,10 +38732,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)(module), (function() { return this; }())))
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -36489,25 +38751,130 @@
 
 
 /***/ },
-/* 33 */
-/***/ function(module, exports) {
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "<div class=\"padded-content\">\n  <mdl-dialog v-ref:create-exam-dialog v-bind:title=\"index !== -1 ? 'Editing Test' : 'Create a test'\">\n    <form action=\"#\">\n      <mdl-textfield label=\"Enter Test Name\" :value.sync=\"newExam.name\"></mdl-textfield>\n      <mdl-textfield label=\"Test Description\" :value.sync=\"newExam.description\" textarea rows=\"3\"></mdl-textfield>\n      <h4 class=\"dialog-sub-header\">Exam Settings</h2>\n      <div class=\"alert\">Set this test as timed to set a duration</div>\n      <div class=\"exam-form-field\">\n        <mdl-checkbox :checked.sync=\"newExam.timed\" class=\"mdl-js-ripple-effect\">Timed</mdl-checkbox>\n        <mdl-textfield label=\"Enter exam duration in seconds\" :value.sync=\"newExam.duration\"></mdl-textfield>\n        <mdl-checkbox :checked.sync=\"newExam.privacy\" class=\"mdl-js-ripple-effect\">Private</mdl-checkbox>\n      </div>\n    </form>\n    <template slot=\"actions\">\n      <mdl-button v-on:click=\"createExam\">OK</mdl-button>\n      <mdl-button @click=\"$refs.createExamDialog.close\">Cancel</mdl-button>\n    </template>\n  </mdl-dialog>\n  <div v-if=\"$loadingRouteData\" class=\"data-loading\">\n    <mdl-spinner></mdl-spinner>\n  </div>\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--6-col\">\n      <h2 class=\"subheader-text\">Listing out your exams</h2>\n    </div>\n    <div class=\"mdl-cell mdl-cell--6-col flex align-middle-right\">\n      <mdl-button raised colored @click=\"showCreateModal()\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Create Exam</mdl-button>\n    </div>\n  </div>\n  <div class=\"mdl-grid\" v-if=\"!$loadingRouteData\">\n    <div class=\"mdl-cell mdl-cell--4-col\" v-for=\"exam in exams\">\n      <div class=\"exam-card-wide mdl-card mdl-shadow--2dp\">\n        <div class=\"mdl-card__title\">\n          <h2 class=\"mdl-card__title-text\">{{ exam.name }}</h2>\n        </div>\n        <div class=\"mdl-card__supporting-text\">\n          {{ exam.description }}\n        </div>\n        <div class=\"mdl-card__actions mdl-card--border\">\n          <mdl-anchor-button colored class=\"mdl-js-ripple-effect mdl-color-text--cyan\" v-link=\"{ path: '/app/exams/' + exam.__id }\">View Exam Details</mdl-anchor-button>\n        </div>\n        <div class=\"mdl-card__menu\">\n          <mdl-button icon @click=\"showCreateModal('editing', $index, exam)\" class=\"mdl-js-ripple-effect mdl-color-text--white mdl-button--icon\">\n            <i class=\"material-icons\">edit</i>\n          </mdl-button>\n          <mdl-button icon @click=\"deleteExam($index, exam)\" class=\"mdl-js-ripple-effect mdl-color-text--white mdl-button--icon\">\n            <i class=\"material-icons\">delete</i>\n          </mdl-button>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class=\"empty-message flex column-layout align-middle-center\" v-if=\"!$loadingRouteData && !exams.length\">\n    <div class=\"empty-icon\">\n      <img src=\"/build/img/folder.png\" />\n    </div>\n    <div class=\"empty-text\">\n      <h2>There are currently no items here</h2>\n    </div>\n  </div>\n</div>\n"
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_template__ = __webpack_require__(40)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-1bb7ee18/Base.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
 
 /***/ },
-/* 34 */
+/* 40 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <div v-if=\"$loadingRouteData\" class=\"data-loading\">\n    <mdl-spinner></mdl-spinner>\n  </div>\n  <div class=\"app-header-strip\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col\">\n        <h2 class=\"app-title-text\">\n          <a v-link=\"{ path: '/app/exams' }\">Exams</a> / {{ exam.name }}\n        </h2>\n      </div>\n    </div>\n  </div>\n  <div class=\"padded-content\" v-show=\"!$loadingRouteData\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n        <div class=\"mdl-tabs mdl-js-tabs mdl-js-ripple-effect\">\n          <div class=\"mdl-tabs__tab-bar\">\n            <a href=\"#about-panel\" class=\"mdl-tabs__tab is-active\">Questions</a>\n            <a href=\"#members-panel\" class=\"mdl-tabs__tab\">Exam Settings</a>\n          </div>\n          <div class=\"mdl-tabs__panel is-active\" id=\"about-panel\">\n            <div class=\"exam-toolbar\">\n              <a class=\"toolbar-link\" @click=\"displayForm\">\n                <i class=\"material-icons\">add</i>\n                Add question\n              </a>\n              <a class=\"toolbar-link\">\n                <i class=\"material-icons\">import_export</i>\n                Import from JSON\n              </a>\n            </div>\n            <div class=\"exam-question\" v-show=\"addingQuestion\">\n              <div class=\"mdl-grid\">\n                <div class=\"mdl-cell mdl-cell--6-col\">\n                  <div class=\"padded-content compact\">\n                    <div class=\"flex align-middle-left\">\n                      <h4 class=\"fill\">Create a new question</h4>\n                      <div class=\"toggle-switch flex fill align-middle-right\">\n                        <span class=\"ms-label\">Toggle Preview</span>\n                        <mdl-switch :checked.sync=\"displayPreview\"></mdl-switch>\n                      </div>\n                    </div>\n                    <form action=\"#\" class=\"flex column-layout\">\n                      <mdl-textfield label=\"Question Text (accepts markdown)\" :value.sync=\"question.text\" textarea rows=\"3\"></mdl-textfield>\n                      <p class=\"form-subheader-text\">Options</p>\n                      <div class=\"exam-options\">\n                        <div class=\"exam-option flex align-middle-left\" v-for=\"i in numberOfOptions\">\n                          <label for=\"question-correct-{{$index}}\" class=\"mdl-radio mdl-js-radio mdl-js-ripple-effect\">\n                            <input type=\"radio\" id=\"question-correct-{{$index}}\" name=\"question-correct\" class=\"mdl-radio__button\" v-model=\"question.is_correct\" value=\"{{$index}}\">\n                          </label>\n                          <mdl-textfield label=\"Enter option text\" :value.sync=\"question.options[$index].text\" class=\"fill\"></mdl-textfield>\n                        </div>\n                        <mdl-anchor-button colored class=\"mdl-js-ripple-effect mdl-color-text--cyan\" @click.prevent=\"addOption\">Add Option</mdl-anchor-button>\n                      </div>\n                      <div class=\"actions\">\n                        <mdl-button raised colored class=\"mdl-js-ripple-effect mdl-color--cyan\" @click.prevent=\"closeForm\">Cancel</mdl-button>\n                        <mdl-button raised colored class=\"mdl-js-ripple-effect mdl-color--cyan\" @click.prevent=\"createQuestion\">Create Question</mdl-button>\n                      </div>\n                    </form>\n                  </div>\n                </div>\n                <div class=\"mdl-cell mdl-cell--6-col\" v-show=\"displayPreview\">\n                  <div class=\"padded-content compact exam-preview\">\n                    <h4>Preview Question</h4>\n                    <div class=\"question-text\" v-html=\"question.text || '' | marked\">{{ question.text }}</div>\n                    <ol type=\"A\">\n                      <li v-for=\"option in question.options\">{{ option.text }}</li>\n                    </ol>\n                  </div>\n                </div>\n              </div>\n            </div>\n            <div class=\"padded-content spacious\">\n              <table class=\"question-items\" v-show=\"questions.length\" cellspacing=0 cellpadding=0>\n                <thead>\n                  <tr>\n                    <th width=\"40\"></th>\n                    <th width=\"70%\">Question Text</th>\n                    <th></th>\n                  </tr>\n                </thead>\n                <tbody>\n                  <tr v-for=\"question in questions\">\n                    <td>#{{ $index + 1 }}</td>\n                    <td>{{ question.text }}</td>\n                    <td class=\"actions\">\n                      <a href=\"#\" id=\"question-visibility\"><i class=\"material-icons\">visibility</i></a>\n                      <a href=\"#\" id=\"question-move-up\"><i class=\"material-icons\">arrow_upward</i></a>\n                      <a href=\"#\" id=\"question-move-down\"><i class=\"material-icons\">arrow_downward</i></a>\n                      <a href=\"#\" id=\"question-edit\"><i class=\"material-icons\">edit</i></a>\n                      <a id=\"question-delete\" @click.prevent=\"deleteQuestion(question.__id, $index, $event)\"><i class=\"material-icons\">delete</i></a>\n                    </td>\n                  </tr>\n                </tbody>\n              </table>\n              <div class=\"empty-message regular flex column-layout align-middle-center\" v-show=\"!questions.length\">\n                <div class=\"empty-icon\">\n                  <img src=\"/build/img/folder.png\" />\n                </div>\n                <div class=\"empty-text\">\n                  <h2>There are currently no questions here</h2>\n                </div>\n              </div>\n            </div>\n          </div>\n          <div class=\"mdl-tabs__panel\" id=\"members-panel\">\n            <div class=\"padded-content spacious\">\n              <p class=\"form-subheader-text\">Public URL</p>\n              <a v-link=\"{ path: '/runner/' + exam.__id }\" target=\"_blank\">View Exam</a>\n              <p class=\"form-subheader-text spacer\">Timing</p>\n              <mdl-checkbox :checked.sync=\"exam.timed\" class=\"mdl-js-ripple-effect\">Timed</mdl-checkbox>\n              <mdl-textfield label=\"Enter exam duration in seconds\" :value.sync=\"exam.duration\"></mdl-textfield>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n"
+	module.exports = "\n<div class=\"app-main\">\n  <!-- App Navigation -->\n  <header>\n    <nav>\n    <div class=\"logo\">\n      <div class=\"responsive-wrapper\">\n      <img src=\"/build/img/logo_new_icon.png\" />\n      </div>\n    </div>\n    <ul class=\"nav-items\">\n      <li>\n      <a v-link=\"{ path: '/app/exams' }\">\n        <div class=\"navicon\">\n          <i class=\"material-icons\">dashboard</i>\n        </div>\n        <div class=\"navtext\">\n          Exams\n        </div>\n      </a>\n      </li>\n    </ul>\n    </nav>\n  </header>\n  <!-- Main App Display -->\n  <section class=\"main-app-display\">\n    <div id=\"exam-notifications\" class=\"mdl-js-snackbar mdl-snackbar\">\n      <div class=\"mdl-snackbar__text\"></div>\n      <button class=\"mdl-snackbar__action\" type=\"button\"></button>\n    </div>\n    <router-view></router-view>\n  </section>\n</div>\n";
 
 /***/ },
-/* 35 */
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_script__ = __webpack_require__(48)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] app/components/ExamBase.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(42)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-335f4bd7/ExamBase.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 42 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <div class=\"page-header flex\">\n    <div class=\"flex fill align-middle-left\">\n      <h1>Exams</h1>\n    </div>\n    <div class=\"header-controls\">\n      <span class=\"user-information\">\n        Logged in as {{user.displayName}}\n      </span>\n      <img v-bind:src=\"user.photoURL\" />\n      <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon\">\n        <i class=\"material-icons\">more_vert</i>\n      </mdl-button>\n      <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n        <mdl-menu-item v-link=\"{ path: '/app/profile'}\">Profile</mdl-menu-item>\n        <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n      </mdl-menu>\n    </div>\n  </div>\n  <router-view></router-view>\n</div>\n"
+	module.exports = "\n<div>\n  <div class=\"page-header flex\">\n    <div class=\"flex fill align-middle-left\">\n      <h1>Exams</h1>\n    </div>\n    <div class=\"header-controls\">\n      <span class=\"user-information\">\n        Logged in as {{user.displayName}}\n      </span>\n      <img v-bind:src=\"user.photoURL\" />\n      <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon\">\n        <i class=\"material-icons\">more_vert</i>\n      </mdl-button>\n      <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n        <mdl-menu-item v-link=\"{ path: '/app/profile'}\">Profile</mdl-menu-item>\n        <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n      </mdl-menu>\n    </div>\n  </div>\n  <router-view></router-view>\n</div>\n";
 
 /***/ },
-/* 36 */
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_script__ = __webpack_require__(45)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] app/components/Home.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(44)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-65592526/Home.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 44 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"main-montage-abs flex\">\n  <div class=\"logo-container flex fill align-middle-center column-layout\">\n    <div class=\"montage-image\">\n      <img src=\"/build/img/logo_new.png\" />\n    </div>\n    <div class=\"montage-actions\">\n      <a class=\"main-montage-btn\" @click.prevent=\"loginUser\">Connect w/ Facebook</a>\n    </div>\n  </div>\n</div>\n";
+
+/***/ },
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36516,27 +38883,592 @@
 	  value: true
 	});
 
-	var _vue = __webpack_require__(1);
+	var _user = __webpack_require__(7);
 
-	var _vue2 = _interopRequireDefault(_vue);
-
-	var _profile = __webpack_require__(37);
-
-	var _profile2 = _interopRequireDefault(_profile);
+	var _user2 = _interopRequireDefault(_user);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var ProfileComponent = _vue2.default.extend({
-	  template: _profile2.default
-	});
+	exports.default = {
+	  route: {
+	    data: function data() {
+	      var _this = this;
 
-	exports.default = ProfileComponent;
+	      _user2.default.checkLoggedIn(function (user) {
+	        if (user) {
+	          _this.$route.router.go({ name: 'exams' });
+	        }
+	      });
+	    }
+	  },
+	  methods: {
+	    loginUser: function loginUser() {
+	      _user2.default.authenticateUser(function () {});
+	    }
+	  }
+	};
 
 /***/ },
-/* 37 */
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_script__ = __webpack_require__(51)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] app/components/ExamList.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(52)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-2b9f71b8/ExamList.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_script__ = __webpack_require__(50)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] app/components/ExamSingle.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(49)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-7ee3324e/ExamSingle.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _user = __webpack_require__(7);
+
+	var _user2 = _interopRequireDefault(_user);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  data: function data() {
+	    return {
+	      user: {}
+	    };
+	  },
+
+	  route: {
+	    data: function data(transition) {
+	      var _this = this;
+
+	      _user2.default.checkLoggedIn(function (user) {
+	        if (!user) {
+	          _this.$route.router.go({ name: 'home' });
+	        }
+	        transition.next({
+	          user: user
+	        });
+	      });
+	    },
+
+	    waitForData: true
+	  },
+	  methods: {
+	    logout: function logout() {
+	      _user2.default.logoutUser(function (err) {
+	        if (!err) console.log("Logging out user");
+	      });
+	    }
+	  }
+	};
+
+/***/ },
+/* 49 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"padded-content\">\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n      <div class=\"padded-content spacious\">\n        Some Text\n      </div>\n    </div>\n  </div>\n</div>\n"
+	module.exports = "\n<div>\n  <div v-if=\"$loadingRouteData\" class=\"data-loading\">\n    <mdl-spinner></mdl-spinner>\n  </div>\n  <div class=\"app-header-strip\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col\">\n        <h2 class=\"app-title-text\">\n          <a v-link=\"{ path: '/app/exams' }\">Exams</a> / {{ exam.name }}\n        </h2>\n      </div>\n    </div>\n  </div>\n  <div class=\"padded-content\" v-show=\"!$loadingRouteData\">\n    <div class=\"mdl-grid\">\n      <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n        <div class=\"mdl-tabs mdl-js-tabs mdl-js-ripple-effect\">\n          <div class=\"mdl-tabs__tab-bar\">\n            <a href=\"#about-panel\" class=\"mdl-tabs__tab is-active\">Questions</a>\n            <a href=\"#members-panel\" class=\"mdl-tabs__tab\">Exam Settings</a>\n          </div>\n          <div class=\"mdl-tabs__panel is-active\" id=\"about-panel\">\n            <div class=\"exam-toolbar\">\n              <a class=\"toolbar-link\" @click=\"displayForm\">\n                <i class=\"material-icons\">add</i>\n                Add question\n              </a>\n              <a class=\"toolbar-link\">\n                <i class=\"material-icons\">import_export</i>\n                Import from JSON\n              </a>\n            </div>\n            <div class=\"exam-question\" v-show=\"addingQuestion\">\n              <div class=\"mdl-grid\">\n                <div class=\"mdl-cell mdl-cell--6-col\">\n                  <div class=\"padded-content compact\">\n                    <div class=\"flex align-middle-left\">\n                      <h4 class=\"fill\">Create a new question</h4>\n                      <div class=\"toggle-switch flex fill align-middle-right\">\n                        <span class=\"ms-label\">Toggle Preview</span>\n                        <mdl-switch :checked.sync=\"displayPreview\"></mdl-switch>\n                      </div>\n                    </div>\n                    <form action=\"#\" class=\"flex column-layout\">\n                      <mdl-textfield label=\"Question Text (accepts markdown)\" :value.sync=\"question.text\" textarea rows=\"3\"></mdl-textfield>\n                      <p class=\"form-subheader-text\">Options</p>\n                      <div class=\"exam-options\">\n                        <div class=\"exam-option flex align-middle-left\" v-for=\"i in numberOfOptions\">\n                          <label for=\"question-correct-{{$index}}\" class=\"mdl-radio mdl-js-radio mdl-js-ripple-effect\">\n                            <input type=\"radio\" id=\"question-correct-{{$index}}\" name=\"question-correct\" class=\"mdl-radio__button\" v-model=\"question.is_correct\" value=\"{{$index}}\">\n                          </label>\n                          <mdl-textfield label=\"Enter option text\" :value.sync=\"question.options[$index].text\" class=\"fill\"></mdl-textfield>\n                        </div>\n                        <mdl-anchor-button colored class=\"mdl-js-ripple-effect mdl-color-text--cyan\" @click.prevent=\"addOption\">Add Option</mdl-anchor-button>\n                      </div>\n                      <div class=\"actions\">\n                        <mdl-button raised colored class=\"mdl-js-ripple-effect mdl-color--cyan\" @click.prevent=\"closeForm\">Cancel</mdl-button>\n                        <mdl-button raised colored class=\"mdl-js-ripple-effect mdl-color--cyan\" @click.prevent=\"createQuestion\">Create Question</mdl-button>\n                      </div>\n                    </form>\n                  </div>\n                </div>\n                <div class=\"mdl-cell mdl-cell--6-col\" v-show=\"displayPreview\">\n                  <div class=\"padded-content compact exam-preview\">\n                    <h4>Preview Question</h4>\n                    <div class=\"question-text\" v-html=\"question.text || '' | marked\">{{ question.text }}</div>\n                    <ol type=\"A\">\n                      <li v-for=\"option in question.options\">{{ option.text }}</li>\n                    </ol>\n                  </div>\n                </div>\n              </div>\n            </div>\n            <div class=\"padded-content spacious\">\n              <table class=\"question-items\" v-show=\"questions.length\" cellspacing=0 cellpadding=0>\n                <thead>\n                  <tr>\n                    <th width=\"40\"></th>\n                    <th width=\"70%\">Question Text</th>\n                    <th></th>\n                  </tr>\n                </thead>\n                <tbody>\n                  <tr v-for=\"question in questions\">\n                    <td>#{{ $index + 1 }}</td>\n                    <td>{{ question.text }}</td>\n                    <td class=\"actions\">\n                      <a href=\"#\" id=\"question-visibility\"><i class=\"material-icons\">visibility</i></a>\n                      <a href=\"#\" id=\"question-move-up\"><i class=\"material-icons\">arrow_upward</i></a>\n                      <a href=\"#\" id=\"question-move-down\"><i class=\"material-icons\">arrow_downward</i></a>\n                      <a href=\"#\" id=\"question-edit\"><i class=\"material-icons\">edit</i></a>\n                      <a id=\"question-delete\" @click.prevent=\"deleteQuestion(question.__id, $index, $event)\"><i class=\"material-icons\">delete</i></a>\n                    </td>\n                  </tr>\n                </tbody>\n              </table>\n              <div class=\"empty-message regular flex column-layout align-middle-center\" v-show=\"!questions.length\">\n                <div class=\"empty-icon\">\n                  <img src=\"/build/img/folder.png\" />\n                </div>\n                <div class=\"empty-text\">\n                  <h2>There are currently no questions here</h2>\n                </div>\n              </div>\n            </div>\n          </div>\n          <div class=\"mdl-tabs__panel\" id=\"members-panel\">\n            <div class=\"padded-content spacious\">\n              <p class=\"form-subheader-text\">Public URL</p>\n              <a v-link=\"{ path: '/runner/' + exam.__id }\" target=\"_blank\">View Exam</a>\n              <p class=\"form-subheader-text spacer\">Timing</p>\n              <mdl-checkbox :checked.sync=\"exam.timed\" class=\"mdl-js-ripple-effect\">Timed</mdl-checkbox>\n              <mdl-textfield label=\"Enter exam duration in seconds\" :value.sync=\"exam.duration\"></mdl-textfield>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(32);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _marked = __webpack_require__(25);
+
+	var _marked2 = _interopRequireDefault(_marked);
+
+	var _utils = __webpack_require__(28);
+
+	var _user = __webpack_require__(7);
+
+	var _user2 = _interopRequireDefault(_user);
+
+	var _exam = __webpack_require__(29);
+
+	var _exam2 = _interopRequireDefault(_exam);
+
+	var _question = __webpack_require__(30);
+
+	var _question2 = _interopRequireDefault(_question);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  data: function data() {
+	    return {
+	      questions: [],
+	      question: {
+	        text: '',
+	        is_correct: 0,
+	        options: []
+	      },
+	      addingQuestion: false,
+	      numberOfOptions: 2,
+	      displayPreview: true
+	    };
+	  },
+
+	  route: {
+	    activate: function activate() {
+	      (0, _utils.loadUI)();
+	    },
+	    data: function data(transition) {
+	      var examId = this.$route.params.examId;
+	      _exam2.default.get(examId, function (exam) {
+	        _question2.default.all(examId, function (questions) {
+	          transition.next({
+	            exam: (0, _utils.idfyObj)(examId, exam),
+	            questions: (0, _utils.objectToArray)(questions)
+	          });
+	        });
+	      });
+	    }
+	  },
+	  methods: {
+	    displayForm: function displayForm() {
+	      this.addingQuestion = true;
+	    },
+	    resetQuestion: function resetQuestion() {
+	      this.question = {
+	        text: '',
+	        is_correct: 0,
+	        options: []
+	      };
+	      this.numberOfOptions = 2;
+	    },
+	    addOption: function addOption() {
+	      if (this.numberOfOptions < 5) {
+	        this.numberOfOptions += 1;
+	        (0, _utils.loadUI)();
+	      }
+	    },
+	    closeForm: function closeForm() {
+	      this.addingQuestion = false;
+	      this.resetQuestion();
+	    },
+	    createQuestion: function createQuestion(event) {
+	      var _this = this;
+
+	      var uid = this.$parent.user.uid;
+	      _question2.default.create(uid, this.exam.__id, this.question, function (err, key) {
+	        if (err) {
+	          console.log("Error occured while trying to create question.");
+	        } else {
+	          var _fb_q = (0, _utils.idfyObj)(key, _this.question);
+	          _this.questions.push(_fb_q);
+	          _this.closeForm();
+	          (0, _utils.notify)("Successfully added the question");
+	        }
+	      });
+	    },
+	    deleteQuestion: function deleteQuestion(id, idx, event) {
+	      var _this2 = this;
+
+	      swal({
+	        title: "Are you sure?",
+	        text: "You are about to delete this question from this exam!",
+	        type: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, delete it!",
+	        closeOnConfirm: true
+	      }, function () {
+	        _question2.default.delete(_this2.exam.__id, id, function (err) {
+	          if (err) {
+	            console.log("Error occured while trying to delete question.");
+	          } else {
+	            _this2.questions.splice(idx, 1);
+	            (0, _utils.notify)("Successfully deleted the question");
+	          }
+	        });
+	      });
+	    }
+	  },
+	  filters: {
+	    marked: _marked2.default
+	  }
+	};
+
+/***/ },
+/* 51 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(32);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _utils = __webpack_require__(28);
+
+	var _user = __webpack_require__(7);
+
+	var _user2 = _interopRequireDefault(_user);
+
+	var _exam = __webpack_require__(29);
+
+	var _exam2 = _interopRequireDefault(_exam);
+
+	var _question = __webpack_require__(30);
+
+	var _question2 = _interopRequireDefault(_question);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  data: function data() {
+	    return {
+	      newExam: { name: '', description: '' },
+	      exams: {},
+	      index: -1
+	    };
+	  },
+
+	  route: {
+	    activate: function activate() {
+	      (0, _utils.loadUI)();
+	    },
+	    data: function data(transition) {
+	      var uid = this.$parent.user.uid;
+	      _exam2.default.all(uid, function (exams) {
+	        transition.next({
+	          exams: (0, _utils.objectToArray)(exams)
+	        });
+	      });
+	    }
+	  },
+	  methods: {
+	    showCreateModal: function showCreateModal(editingFlag, index, item) {
+	      this.index = -1;
+	      this.newExam = { name: '', description: '' };
+	      this.$refs.createExamDialog.open();
+	      if (editingFlag === 'editing') {
+	        this.newExam = _lodash2.default.assign({}, item);
+	        this.index = index;
+	      }
+	    },
+	    deleteExam: function deleteExam(index, exam) {
+	      var _this = this;
+
+	      swal({
+	        title: "Are you sure?",
+	        text: "You are about to delete this exam!",
+	        type: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, delete it!",
+	        closeOnConfirm: true
+	      }, function () {
+	        _exam2.default.delete(exam.__id, function (error) {
+	          if (!error) {
+	            _this.exams.splice(index, 1);
+	            (0, _utils.notify)("Successfully deleted the test");
+	          }
+	        });
+	      });
+	    },
+	    createExam: function createExam(event) {
+	      var _this2 = this;
+
+	      var uid = this.$parent.user.uid;
+	      if (this.newExam) {}
+	      if (this.newExam.hasOwnProperty('__id')) {
+	        _exam2.default.update(this.newExam, function (err, key) {
+	          if (!err) {
+	            _this2.exams.$set(_this2.index, _this2.newExam);
+	            _this2.newExam = { name: '', description: '' };
+	            _this2.index = -1;
+	            _this2.$refs.createExamDialog.close();
+	            (0, _utils.notify)("Successfully updated the test");
+	          } else {
+	            console.log("Error occured while trying to update exam");
+	          }
+	        });
+	      } else {
+	        _exam2.default.create(uid, this.newExam, function (err, key) {
+	          if (!err) {
+	            var _fb_form = (0, _utils.idfyObj)(key, _this2.newExam);
+	            _this2.exams.push(_fb_form);
+	            _this2.newExam = { name: '', description: '' };
+	            _this2.$refs.createExamDialog.close();
+	            (0, _utils.notify)("Successfully added the test");
+	          } else {
+	            console.log("Error occured while trying to create exam.");
+	          }
+	        });
+	      }
+	    }
+	  }
+	};
+
+/***/ },
+/* 52 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"padded-content\">\n  <mdl-dialog v-ref:create-exam-dialog v-bind:title=\"index !== -1 ? 'Editing Test' : 'Create a test'\">\n    <validator name=\"validation\">\n      <form novalidate action=\"#\">\n        <div class=\"mdl-textfield mdl-js-textfield\">\n          <input class=\"mdl-textfield__input\" type=\"text\" id=\"name\" v-model=\"newExam.name\" v-validate=\"required\">\n          <label class=\"mdl-textfield__label\" for=\"name\">Enter Test Name</label>\n          <span class=\"mdl-textfield__error\" v-show=\"validation.newExam.name.required\">The name field is required</span>\n        </div>\n        <mdl-textfield label=\"Test Description\" :value.sync=\"newExam.description\" textarea rows=\"3\" error=\"This field is required\" required></mdl-textfield>\n        <h4 class=\"dialog-sub-header\">Exam Settings</h2>\n        <div class=\"alert\">Set this test as timed to set a duration</div>\n        <div class=\"exam-form-field\">\n          <mdl-checkbox :checked.sync=\"newExam.timed\" class=\"mdl-js-ripple-effect\">Timed</mdl-checkbox>\n          <mdl-textfield label=\"Enter exam duration in seconds\" :value.sync=\"newExam.duration\"></mdl-textfield>\n          <mdl-checkbox :checked.sync=\"newExam.privacy\" class=\"mdl-js-ripple-effect\">Private</mdl-checkbox>\n        </div>\n      </form>\n    </validator>\n    <template slot=\"actions\">\n      <mdl-button @click=\"$refs.createExamDialog.close\">Cancel</mdl-button>\n      <mdl-button @click=\"createExam\">OK</mdl-button>\n    </template>\n  </mdl-dialog>\n  <div v-if=\"$loadingRouteData\" class=\"data-loading\">\n    <mdl-spinner></mdl-spinner>\n  </div>\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--6-col\">\n      <h2 class=\"subheader-text\">Listing out your exams</h2>\n    </div>\n    <div class=\"mdl-cell mdl-cell--6-col flex align-middle-right\">\n      <mdl-button raised colored @click=\"showCreateModal()\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Create Exam</mdl-button>\n    </div>\n  </div>\n  <div class=\"mdl-grid\" v-if=\"!$loadingRouteData\">\n    <div class=\"mdl-cell mdl-cell--4-col\" v-for=\"exam in exams\">\n      <div class=\"exam-card-wide mdl-card mdl-shadow--2dp\">\n        <div class=\"mdl-card__title\">\n          <h2 class=\"mdl-card__title-text\">{{ exam.name }}</h2>\n        </div>\n        <div class=\"mdl-card__supporting-text\">\n          {{ exam.description }}\n        </div>\n        <div class=\"mdl-card__actions mdl-card--border\">\n          <mdl-anchor-button colored class=\"mdl-js-ripple-effect mdl-color-text--cyan\" v-link=\"{ path: '/app/exams/' + exam.__id }\">View Exam Details</mdl-anchor-button>\n        </div>\n        <div class=\"mdl-card__menu\">\n          <mdl-button icon @click=\"showCreateModal('editing', $index, exam)\" class=\"mdl-js-ripple-effect mdl-color-text--white mdl-button--icon\">\n            <i class=\"material-icons\">edit</i>\n          </mdl-button>\n          <mdl-button icon @click=\"deleteExam($index, exam)\" class=\"mdl-js-ripple-effect mdl-color-text--white mdl-button--icon\">\n            <i class=\"material-icons\">delete</i>\n          </mdl-button>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class=\"empty-message flex column-layout align-middle-center\" v-if=\"!$loadingRouteData && !exams.length\">\n    <div class=\"empty-icon\">\n      <img src=\"/build/img/folder.png\" />\n    </div>\n    <div class=\"empty-text\">\n      <h2>There are currently no items here</h2>\n    </div>\n  </div>\n</div>\n";
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_script__ = __webpack_require__(54)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] app/components/Runner.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(55)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-1998ef37/Runner.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 54 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _superagent = __webpack_require__(19);
+
+	var _superagent2 = _interopRequireDefault(_superagent);
+
+	var _marked = __webpack_require__(25);
+
+	var _marked2 = _interopRequireDefault(_marked);
+
+	var _utils = __webpack_require__(28);
+
+	var _exam = __webpack_require__(29);
+
+	var _exam2 = _interopRequireDefault(_exam);
+
+	var _user = __webpack_require__(7);
+
+	var _user2 = _interopRequireDefault(_user);
+
+	var _question = __webpack_require__(30);
+
+	var _question2 = _interopRequireDefault(_question);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  data: function data() {
+	    return {
+	      exam: {},
+	      answers: {},
+	      questions: [],
+	      examReport: {},
+	      markingExam: false,
+	      finishedExam: false,
+	      currentQuestion: 0
+	    };
+	  },
+
+	  route: {
+	    data: function data(transition) {
+	      var _this = this;
+
+	      _user2.default.checkLoggedIn(function (user) {
+	        if (!user) {}
+	        var examId = _this.$route.params.examId;
+	        _exam2.default.get(examId, function (exam) {
+	          _question2.default.all(examId, function (questions) {
+	            transition.next({
+	              user: user,
+	              exam: (0, _utils.idfyObj)(examId, exam),
+	              questions: (0, _utils.objectToArray)(questions)
+	            });
+	            (0, _utils.loadUI)();
+	          });
+	        });
+	      });
+	    }
+	  },
+	  methods: {
+	    submitExam: function submitExam($event) {
+	      var _this2 = this;
+
+	      this.markingExam = true;
+	      var examId = this.$route.params.examId;
+	      _superagent2.default.post('/scorer/' + examId + '/').send({
+	        data: this.answers,
+	        uid: this.user.uid
+	      }).end(function (err, res) {
+	        _this2.examReport = res.body;
+	        _this2.markingExam = false;
+	        _this2.finishedExam = true;
+	      });
+	    },
+	    nextQuestion: function nextQuestion($event) {
+	      if (this.currentQuestion < this.questions.length - 1) {
+	        this.currentQuestion += 1;
+	        (0, _utils.loadUI)();
+	      }
+	    },
+	    prevQuestion: function prevQuestion($event) {
+	      if (this.currentQuestion > 0) {
+	        this.currentQuestion -= 1;
+	        (0, _utils.loadUI)();
+	      }
+	    },
+	    resetExam: function resetExam($event) {
+	      this.currentQuestion = 0;
+	      this.answers = {};
+	      this.examReport = {};
+	      this.markingExam = false;
+	      this.finishedExam = false;
+	      this.currentQuestion = 0;
+	    },
+	    closeWindow: function closeWindow($event) {
+	      window.close();
+	    }
+	  },
+	  filters: {
+	    marked: _marked2.default
+	  }
+	};
+
+/***/ },
+/* 55 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div>\n  <header class=\"horizontal\">\n    <div class=\"shunted-container flex align-middle-left\">\n      <nav class=\"fill\">\n        <div class=\"logo\">\n          <div class=\"responsive-wrapper\">\n            <img src=\"/build/img/logo_new_icon.png\" />\n          </div>\n        </div>\n      </nav>\n      <div class=\"header-controls inverted\">\n        <span class=\"user-information mdl-color-text--white\">\n          Logged in as {{user.displayName}}\n        </span>\n        <img v-bind:src=\"user.photoURL\" />\n        <mdl-button id=\"main-dropdown\" class=\"mdl-button--icon mdl-color-text--white\">\n          <i class=\"material-icons\">more_vert</i>\n        </mdl-button>\n        <mdl-menu for=\"main-dropdown\" class=\"mdl-menu--bottom-right\">\n          <mdl-menu-item v-link=\"{ path: '/app/profile'}\">Profile</mdl-menu-item>\n          <mdl-menu-item @click.prevent=\"logout\">Logout</mdl-menu-item>\n        </mdl-menu>\n      </div>\n    </div>\n  </header>\n  <div v-if=\"$loadingRouteData || markingExam\" class=\"data-loading\" v-bind:class=\"{ 'dimmed': markingExam }\">\n    <mdl-spinner></mdl-spinner>\n  </div>\n  <main class=\"padded-top\">\n    <div v-if=\"!$loadingRouteData\" class=\"shunted-container\">\n      <div class=\"report-container mdl-color--white mdl-shadow--2dp\" v-if=\"finishedExam\">\n        <div class=\"report-header\">\n          <div class=\"rounded-container\">\n            <img src=\"/build/img/tick.png\" />\n          </div>\n          <h1>Here are your results</h1>\n        </div>\n        <h1 class=\"test-title\">{{ exam.name }}</h1>\n        <div class=\"test-score\">\n          <span>Your score: {{ examReport.score }}/{{ questions.length }}</span>\n        </div>\n        <mdl-button raised colored @click=\"resetExam\" class=\"mdl-js-ripple-effect mdl-color--deep-orange\">Try Exam Again</mdl-button>\n        <mdl-button raised colored @click=\"closeWindow\" class=\"mdl-js-ripple-effect mdl-color--deep-orange\">Close this window</mdl-button>\n      </div>\n      <div class=\"test-container mdl-color--white mdl-shadow--2dp\" v-if=\"!finishedExam\">\n        <h1 class=\"test-title fill\">{{ exam.name }}</h1>\n        <div class=\"question-container column-layout flex align-top-left\" v-for=\"(qIdx, question) in questions\" v-if=\"$index == currentQuestion\">\n          <div class=\"count\">Question {{$index + 1}}/{{ questions.length }}</div>\n          <div class=\"question-text fill\" v-html=\"question.text || '' | marked\"></div>\n          <div class=\"question-options\">\n            <div class=\"question-option flex align-middle-left\" v-for=\"option in question.options\">\n              <label for=\"question-correct-{{qIdx}}-{{$index}}\" class=\"mdl-radio mdl-js-radio mdl-js-ripple-effect\">\n                <input type=\"radio\" id=\"question-correct-{{qIdx}}-{{$index}}\" name=\"question-correct-{{qIdx}}\" class=\"mdl-radio__button\" v-model=\"answers[question.__id]\" value=\"{{$index}}\">\n              </label>\n              <div>\n                {{option.text}}\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"test-controls\">\n          <div class=\"progress-meter\">\n\n          </div>\n          <div class=\"buttons\">\n            <mdl-button raised colored @click=\"prevQuestion\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Previous Question</mdl-button>\n            <mdl-button raised colored @click=\"nextQuestion\" class=\"mdl-js-ripple-effect mdl-color--cyan\">Next Question</mdl-button>\n            <mdl-button raised colored @click=\"submitExam\" class=\"mdl-js-ripple-effect mdl-color--deep-orange\">Submit Exam</mdl-button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </main>\n</div>\n";
+
+/***/ },
+/* 56 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	var __vue_styles__ = {}
+	__vue_template__ = __webpack_require__(57)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	var __vue_options__ = typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports
+	if (__vue_template__) {
+	__vue_options__.template = __vue_template__
+	}
+	if (!__vue_options__.computed) __vue_options__.computed = {}
+	Object.keys(__vue_styles__).forEach(function (key) {
+	var module = __vue_styles__[key]
+	__vue_options__.computed[key] = function () { return module }
+	})
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-345c7832/Profile.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 57 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"padded-content\">\n  <div class=\"mdl-grid\">\n    <div class=\"mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp\">\n      <div class=\"padded-content spacious\">\n        Some Text\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }
 /******/ ]);

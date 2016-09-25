@@ -13,7 +13,7 @@ Bundle the application.
 webpack
 ```
 
-You may run `webpack -w` if you want to watch for changes while developing.
+You can run `webpack -w` if you want to watch for changes while developing.
 
 Start the application
 

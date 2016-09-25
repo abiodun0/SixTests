@@ -4,19 +4,27 @@ module.exports = {
     filename: './build/bundle.js'
   },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015']
+    loaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: {
+          presets: ['es2015']
+        }
+      },
+      {
+        test: /\.html$/,
+        loader: 'raw'
+      },
+      {
+        test: /\.scss$/,
+        loader: 'raw'
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue'
       }
-    },{
-      test: /\.html$/,
-      loader: 'raw'
-    },{
-      test: /\.scss$/,
-      loader: 'raw'
-    }]
+    ]
   }
 }

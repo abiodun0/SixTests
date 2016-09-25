@@ -1,62 +1,59 @@
 import Vue from 'vue';
 import VueMdl from 'vue-mdl'
 import VueRouter from 'vue-router';
-import HomeComponent from './components/home/home';
-import BaseAppComponent from './components/base/base';
-import { RunHomeComponent, RunExamComponent } from './components/runner/runner';
-import {
-  ListExamComponent,
-  SingleExamComponent,
-  BaseExamComponent
-} from './components/exam/exam';
-import ProfileComponent from './components/profile/profile'
+import VueValidator from 'vue-validator';
+
+import Home from './components/Home.vue'
+import AppBase from './components/Base.vue';
+import ExamBase from './components/ExamBase.vue'
+import ExamSingle from './components/ExamSingle.vue'
+import ExamList from './components/ExamList.vue'
+import Runner from './components/Runner.vue';
+import Profile from './components/Profile.vue'
 
 Vue.use(VueRouter);
 Vue.use(VueMdl);
+Vue.use(VueValidator);
 
 var App = Vue.extend({});
 
 var router = new VueRouter({
-  hashbang: false,
-  history: true
+    hashbang: false,
+    history: true
 });
 
 router.map({
-  '/': {
-    name: 'home',
-    component: HomeComponent
-  },
-  '/runner/home': {
-    name: 'runnerhome',
-    component: RunHomeComponent
-  },
-  '/runner/:exam_id': {
-    name: 'runner',
-    component: RunExamComponent
-  },
-  '/app': {
-    component: BaseAppComponent,
-    subRoutes: {
-      '/exams': {
-        name: 'exams',
-        component: BaseExamComponent,
+    '/': {
+        name: 'home',
+        component: Home
+    },
+    '/runner/:examId': {
+        name: 'runner',
+        component: Runner
+    },
+    '/app': {
+        component: AppBase,
         subRoutes: {
-          '/': {
-            name: 'allexams',
-            component: ListExamComponent
-          },
-          '/:exam_id': {
-            name: 'singleexam',
-            component: SingleExamComponent
-          }
+            '/exams': {
+                name: 'exams',
+                component: ExamBase,
+                subRoutes: {
+                    '/': {
+                        name: 'allexams',
+                        component: ExamList
+                    },
+                    '/:examId': {
+                        name: 'singleexam',
+                        component: ExamSingle
+                    }
+                }
+            },
+            '/profile': {
+                name: 'profile',
+                component: Profile
+            },
         }
-      },
-      '/profile': {
-        name: 'profile',
-        component: ProfileComponent
-      },
     }
-  }
 })
 
 router.start(App, '#app')
